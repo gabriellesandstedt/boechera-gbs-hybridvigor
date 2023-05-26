@@ -99,6 +99,7 @@ rule index_bam:
         index_bam=f"{data_dir}/{{sample}}_sorted.bam.bai"
     shell:
         """
+        module load samtools/1.16
         samtools index {input.sorted_bam}
         echo -e "\\n["$(date)"]\\n bam file is indexed ..\\n"
         """
