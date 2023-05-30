@@ -23,7 +23,7 @@ df2 = pd.read_csv(f"{data_dir}/config3.txt", sep="\t")
 # Define the reference genome filename
 ref = "GCA_018361405.1_NTU_Bstr_LTM_2.2_genomic.fa"
 
-# define sample map for all samples (sample_map1) and matrix (sample_map2), this includes two columns: column 1 with sample name and column 2 with path to sample
+# define sample map for all samples (sample_map1) and matrix (sample_map2), this includes two columns: column 1 with sample name and column 2 with path to samples
 sample_map1 = "sample_map1.txt"
 sample_map2 = "sample_map2.txt"
 
