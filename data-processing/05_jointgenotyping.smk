@@ -3,7 +3,7 @@
 ################################################################################
 ################################################################################
 ## AUTHOR: Gabrielle Sandstedt
-## command to run snakemake script: snakemake --rerun-incomplete --latency-wait 60 --cores 4 -s 05_genotype.smk
+## command to run snakemake script: snakemake --rerun-incomplete --latency-wait 60 --cores 4 -s 05_jointgenotyping.smk
 ################################################################################
 ################################################################################
 import os
@@ -30,7 +30,7 @@ sample_map2 = "sample_map2.txt"
 # define interval list with list of chromosomes
 interval_list = "interval.list"
 
-# define rule
+# define all output files for rule all 
 rule all:
     input:
         expand(f"{ref_dir}/{ref}.dict"),
@@ -38,7 +38,7 @@ rule all:
         expand(f"{data_dir}/boechera_gbs_allsamples.vcf"),
         expand(f"{data_dir}/boechera_gbs_matrix.vcf")
 
-
+# define rule to index reference with GATK 
 rule index_reference:
     input:
         reference = f"{ref_dir}/{ref}"
@@ -52,6 +52,7 @@ rule index_reference:
             -O {output.index}
         """
 
+# define rule to call potential variants for each sample
 rule hap_caller:
     input:
         ref = f"{ref_dir}/{ref}",
@@ -70,6 +71,7 @@ rule hap_caller:
             -ERC GVCF
         """
 
+# define rule to combine gvcfs of all samples in a database
 rule genomicsdb_import_allsamples:
     input:
         gvcf=expand(f"{data_dir}/{{sample}}.g.vcf", sample=df['Sample']),
@@ -87,7 +89,7 @@ rule genomicsdb_import_allsamples:
             --sample-name-map {input.map_allsamples} \
             --intervals {input.interval_list}
         """
-
+# define rule to combine gvcfs for retro samples used in the genetic matrix in a database
 rule genomicsdb_import_matrix:
     input:
         gvcf=expand(f"{data_dir}/{{sample}}.g.vcf", sample=df2['Sample']),
@@ -106,6 +108,7 @@ rule genomicsdb_import_matrix:
             --intervals {input.interval_list}
         """
 
+# define rule to joint genotype for all samples at all sites
 rule joint_genotype_allsamples:
     input:
         reference=f"{ref_dir}/{ref}",
@@ -127,6 +130,7 @@ rule joint_genotype_allsamples:
             -O {output.boech_output}
         """
 
+# define rule to joint genotype for samples used in the genetic matrix       
 rule joint_genotype_matrix:
     input:
         reference=f"{ref_dir}/{ref}",
