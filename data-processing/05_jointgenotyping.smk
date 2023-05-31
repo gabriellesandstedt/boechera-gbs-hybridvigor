@@ -41,14 +41,14 @@ rule all:
 # define rule to index reference with GATK 
 rule index_reference:
     input:
-        reference = f"{ref_dir}/{ref}"
+        ref = f"{ref_dir}/{ref}"
     output:
         index = f"{ref_dir}/{ref}.dict"
     shell:
         """
         module load gatk/4.1
         gatk CreateSequenceDictionary \
-            -R {input.reference} \
+            -R {input.ref} \
             -O {output.index}
         """
 
@@ -111,7 +111,7 @@ rule genomicsdb_import_matrix:
 # define rule to joint genotype for all samples at all sites
 rule joint_genotype_allsamples:
     input:
-        reference=f"{ref_dir}/{ref}",
+        ref=f"{ref_dir}/{ref}",
         intervals=f"{data_dir}/{interval_list}"
     output:
         boech_output=f"{data_dir}/boechera_gbs_allsamples.vcf"
@@ -122,7 +122,7 @@ rule joint_genotype_allsamples:
         """
         module load gatk/4.1
         gatk GenotypeGVCFs \
-            -R {input.reference} \
+            -R {input.ref} \
             -V {params.genomicsdb} \
             -L {input.intervals} \
             --allow-old-rms-mapping-quality-annotation-data \
@@ -133,7 +133,7 @@ rule joint_genotype_allsamples:
 # define rule to joint genotype for samples used in the genetic matrix       
 rule joint_genotype_matrix:
     input:
-        reference=f"{ref_dir}/{ref}",
+        ref=f"{ref_dir}/{ref}",
         intervals=f"{data_dir}/{interval_list}"
     output:
         boech_output=f"{data_dir}/boechera_gbs_matrix.vcf"
@@ -143,7 +143,7 @@ rule joint_genotype_matrix:
         """
         module load gatk/4.1
         gatk GenotypeGVCFs \
-            -R {input.reference} \
+            -R {input.ref} \
             -V {params.genomicsdb} \
             -L {input.intervals} \
             --allow-old-rms-mapping-quality-annotation-data \
