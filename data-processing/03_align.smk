@@ -18,7 +18,7 @@ ref_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS/ref_genomes/data"
 ref = "GCA_018361405.1_NTU_Bstr_LTM_2.2_genomic.fa"
 
 # Read the sample information from the config2 file into a pandas DataFrame
-# config2.txt has three columns (col 1| Array ID, col 2| Sample name including fastqs that were concatenated)
+# config2.txt has two columns (col 1| Array ID, col 2| Sample name including fastqs that were concatenated)
 df = pd.read_csv(f"{data_dir}/config2.txt", sep="\t")
 
 # define all output files from script
