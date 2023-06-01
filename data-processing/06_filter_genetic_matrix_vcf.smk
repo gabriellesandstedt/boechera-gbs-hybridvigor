@@ -16,10 +16,10 @@ input_vcf = "boechera_gbs_matrix.vcf"
 ref_genome = "GCA_018361405.1_NTU_Bstr_LTM_2.2_genomic.fa"
 
 # define the output filenames
-output_biallelic_vcf = "boech_gbs_matrix_biallel.vcf"
-output_variant_table = "boech_gbs_matrix_variant.table" # indels and snps 
-output_filtered_vcf = "boech_gbs_matrix_biallel_filter.vcf"
-output_passed_vcf = "boech_gbs_matrix_biallel_filterPASSED.vcf"
+biallelic_vcf = "boech_gbs_matrix_biallelic.vcf"
+variant_table = "boech_gbs_matrix_variant.table" # indels and snps 
+filtered_vcf = "boech_gbs_matrix_biallelic_filter.vcf"
+filtered_passed_vcf = "boech_gbs_matrix_biallelic_filterPASSED.vcf"
 
 # select biallelic SNPs
 rule select_biallelic_snps:
@@ -27,7 +27,7 @@ rule select_biallelic_snps:
         ref=f"{ref_dir}/{ref_genome}",
         vcf=f"{data_dir}/{input_vcf}"
     output:
-        vcf=f"{data_dir}/{output_biallelic_vcf}"
+        biallelic_vcf=f"{data_dir}/{biallelic_vcf}"
     shell:
         """
         gatk SelectVariants \
@@ -35,7 +35,7 @@ rule select_biallelic_snps:
         -V {input.vcf} \
         --select-type-to-include SNP \
         --restrict-alleles-to BIALLELIC \
-        -O {output.vcf}
+        -O {output.biallelic_vcf}
         """
        
 # create variant table
@@ -44,7 +44,7 @@ rule variant_table:
         ref=f"{ref_dir}/{ref_genome}",
         vcf=f"{data_dir}/{input_vcf}"
     output:
-        table=f"{data_dir}/{output_variant_table}"
+        table=f"{data_dir}/{variant_table}"
     shell:
         """
         gatk VariantsToTable \
@@ -53,46 +53,40 @@ rule variant_table:
         -F CHROM -F POS -F QUAL -F QD -F DP -F MQ -F MQRankSum -F FS -F ReadPosRankSum -F SOR -F AD \
         -O {output.table}
         """
-        
+       
 rule plot_densities:
     output:
-        "boech_gbs_matrix_DP.pdf"
-    script:
-        r"""
+        "boech_gbs_matrix_variant_plot_densities.pdf"
+    shell:
+        """
+        Rscript filtering_diagnostics.R
         """
 
-# filter variants 
+# filter variants based on plot_densities rule
 rule filter_variants:
     input:
-        reference=ref_genome,
-        vcf=input_vcf
+        ref=f"{ref_dir}/{ref_genome}",
+        biallelic_vcf=f"{data_dir}/{biallelic_vcf}"
     output:
-        vcf=output_filtered_vcf
+        filtered_vcf=f"{data_dir}/{filtered_vcf}"
     shell:
         """
         gatk VariantFiltration \
-        -R {input.reference} \
-        -V {input.vcf} \
+        -R {input.ref} \
+        -V {input.biallelic_vcf} \
         --filterExpression "QUAL < 0 || MQ < 40.00 || SOR > 4.000 || QD < 2.00 || FS > 60.000 || MQRankSum < -12.500 || ReadPosRankSum < -10.000 || ReadPosRankSum > 10.000" \
         --filterName "my_snp_filter" \
-        -o {output.vcf}
+        -o {output.filtered_vcf}
         """
 
-# Extract passed variants
+# extract passed variants
 rule extract_passed_variants:
     input:
-        vcf=output_filtered_vcf
+        filtered_vcf=f"{data_dir}/{filtered_vcf}"
     output:
-        vcf=output_passed_vcf
+        filtered_passed_vcf=f"{data_dir}/{filtered_passed_vcf}"
     shell:
         """
-        grep -E '^#|PASS' {input.vcf} > {output.vcf}
+        grep -E '^#|PASS' {input.filtered_vcf} > {output.filtered_passed_vcf}
         """
 
-# Rule to execute all steps
-rule all:
-    input:
-        output_biallelic_vcf,
-        output_no_variation_vcf,
-        output_variant_table,
-        output
