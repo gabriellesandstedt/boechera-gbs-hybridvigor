@@ -51,15 +51,6 @@ rule variant_table:
         Rscript {input.rscript}
         """
 
-# filter variants based on plot_densities rule
-rule filter_variant_diagnostics:
-    output:
-        f"{data_dir}/boech_gbs_matrix_variant_plot_densities.pdf"
-    shell:
-        """
-        Rscript {scripts_dir}/filtering_diagnostics.R
-        """
-
 # filter variants
 rule filter_variants:
     input:
