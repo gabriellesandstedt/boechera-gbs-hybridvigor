@@ -53,25 +53,7 @@ rule variant_table:
         Rscript {input.rscript}
         """
 
-# filter variants based on:
-## Filters:
-## 	QD = quality by depth
-## 		variant quality score divided by depth of alternate allele
-## 	QUAL = SNP quality
-## 		phred-scaled quality score; measure in confidence that there is a variation at a site
-## 	SOR = StrandOddsRatio
-## 		high values suggest strand bias
-## 	FS = Fisher strand
-## 		phred-scaled p-values for strand bias; higher values more likely to be false +
-## 	MQ = RMS Mapping quality
-## 		root mean square of mapping quality of reads across samples
-## 	MQRankSum = Mapping quality rank sum test
-## 		U-based z-approx from Mann-Whitney Rank Sum Test for MQ
-## 	ReadPosRankSum
-## 		U-based z-approx from Mann-Whitney Rank Sum Test for distance of alt allele from end of reads
-## 		bases near end of read more likely to have errors
-## 		if all reads with the alt allele are near the end may be errors
-
+# rule to filter variants:
 rule filter_variants:
     input:
         ref=f"{ref_dir}/{ref_genome}",
