@@ -196,7 +196,7 @@ rule vcf_to_gzvcf:
         tabix -p vcf {output.final_gzvcf}
         """
 
-# define rule to conver a vcf to a bed file         
+# define rule to convert a vcf to a bed file         
 rule vcfgz_to_bed:
     input:
         final_gzvcf=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf.gz"
@@ -213,6 +213,7 @@ rule vcfgz_to_bed:
                --allow-extra-chr
         """
 
+# define rule to create a square genetic relatedness matrix 
 rule calculate_relatedness:
     input:
         freq=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf.afreq",
