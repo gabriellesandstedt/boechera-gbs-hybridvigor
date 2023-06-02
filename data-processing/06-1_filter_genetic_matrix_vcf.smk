@@ -15,6 +15,15 @@ ref_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS/ref_genomes/data"
 # define the reference genome filename
 ref_genome = "GCA_018361405.1_NTU_Bstr_LTM_2.2_genomic.fa"
 
+# define rule all statement
+rule all:
+    input:
+        f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf.gz",
+        f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf.gz.tbi",
+        f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf.bed",
+        f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf.rel"
+
+
 # select biallelic SNPs
 rule select_biallelic_snps:
     input:
@@ -44,6 +53,7 @@ rule variant_table:
     shell:
         """
         module load gatk/4.1
+        module load R
         gatk VariantsToTable \
             -R {input.ref} \
             -V {input.vcf} \
@@ -93,6 +103,7 @@ rule table_for_depth:
     shell:
         """
         module load gatk/4.1
+        module load R
         gatk VariantsToTable \
             -R {input.ref} \
             -V {input.vcf} \
@@ -145,16 +156,18 @@ rule filter_heterozygous_genotypes:
         f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets.vcf"
     shell:
         """
+        module load R
         Rscript {input.rscript}
         """
 
 # filter minor allele count
+# mac 3/41 samples, >0.05% 
 # final vcf contains 2096 snp positions
 rule filter_minor_allele_count:
     input:
         filtered_hets_vcf=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets.vcf"
     output:
-        filtered_mac_vcf=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf"
+        final_vcf=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf"
     shell:
         """
         module load vcftools/0.1.15-6
@@ -169,3 +182,49 @@ rule filter_minor_allele_count:
             --out {output.filtered_mac_vcf}
         """
 
+# define rule to bgzip vcf file
+rule vcf_to_gzvcf:
+    input:
+        final_vcf=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf"
+    output:
+        final_gzvcf=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf.gz",
+        tabix_gzvcf=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf.gz.tbi"
+    shell:
+        """
+        module load htslib/1.16
+        bgzip {input.final_vcf}
+        tabix -p vcf {output.final_gzvcf}
+        """
+
+# define rule to conver a vcf to a bed file         
+rule vcfgz_to_bed:
+    input:
+        final_gzvcf=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf.gz"
+    output:
+        bed=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf"
+    shell:
+        """
+        module load plink/2.0
+        plink2 --vcf {input.final_gzvcf} \
+               --set-missing-var-ids @:#[b37] \
+               --make-bed \
+               --out {output.bed} \
+               --freq \
+               --allow-extra-chr
+        """
+
+rule calculate_relatedness:
+    input:
+        freq=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf.afreq",
+        bed=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf.bed"
+    output:
+        rel=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf.rel"
+    shell:
+        """
+        module load plink/2.0
+        plink2 --read-freq {input.freq} \
+               --bfile {input.bed} \
+               --make-rel square \
+               --allow-extra-chr \
+               --out {output.rel}
+        """       
