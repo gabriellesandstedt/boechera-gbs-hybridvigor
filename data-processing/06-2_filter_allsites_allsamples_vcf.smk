@@ -1,10 +1,10 @@
 ################################################################################
-## filter vcf for the genetic relatedness matrix 
+## filter vcf containing all samples and joint genotyped at all sites
 ## most filtering methods were modified from: https://evodify.com/gatk-in-non-model-organism/
 ################################################################################
 ################################################################################
 ## AUTHOR: Gabrielle Sandstedt
-## command to run snakemake script: snakemake --rerun-incomplete --latency-wait 60 --cores 4 -s 06_filter_genetic_matrix_vcf.smk
+## command to run snakemake script: snakemake --rerun-incomplete --latency-wait 60 --cores 4 -s 06_filter_allsites_allsamples_vcf.smk
 ################################################################################
 ################################################################################
 # define directories
@@ -18,19 +18,37 @@ ref_genome = "GCA_018361405.1_NTU_Bstr_LTM_2.2_genomic.fa"
 # define rule all statement
 rule all:
     input:
-        f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf.gz",
-        f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf.gz.tbi",
-        f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf.bed",
-        f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf.rel"
+        f"{data_dir}/boech_gbs_allsites_filter_DP_hets_mac.vcf.recode.vcf.gz",
+        f"{data_dir}/boech_gbs_allsites_filter_DP_hets_mac.vcf.recode.vcf.gz.tbi",
+        f"{data_dir}/boech_gbs_allsites_filter_DP_hets_mac.vcf.recode.vcf.bed",
+        f"{data_dir}/boech_gbs_allsites_filter_DP_hets_mac.vcf.recode.vcf.rel"
 
 
 # select biallelic SNPs
 rule select_biallelic_snps:
     input:
         ref=f"{ref_dir}/{ref_genome}",
-        vcf=f"{data_dir}/boechera_gbs_matrix.vcf"
+        vcf=f"{data_dir}/boechera_gbs_allsamples.vcff"
     output:
-        biallelic_vcf=f"{data_dir}/boech_gbs_matrix_biallelic.vcf"
+        biallelic_vcf=f"{data_dir}/boechera_gbs_allsamples_biallelic_snps.vcf"
+    shell:
+        """
+        module load gatk/4.1
+        gatk SelectVariants \
+            -R {input.ref} \
+            -V {input.vcf} \
+            --select-type-to-include SNP \
+            --restrict-alleles-to BIALLELIC \
+            -O {output.biallelic_vcf}
+        """
+
+# select biallelic SNPs
+rule select_biallelic_snps:
+    input:
+        ref=f"{ref_dir}/{ref_genome}",
+        vcf=f"{data_dir}/boechera_gbs_allsamples.vcf"
+    output:
+        biallelic_vcf=f"{data_dir}/boechera_gbs_allsamples_invariant.vcf"
     shell:
         """
         module load gatk/4.1
