@@ -19,16 +19,14 @@ ref_genome = "GCA_018361405.1_NTU_Bstr_LTM_2.2_genomic.fa"
 rule all:
     input:
         f"{data_dir}/boech_gbs_allsites_filter_DP_hets_mac.vcf.recode.vcf.gz",
-        f"{data_dir}/boech_gbs_allsites_filter_DP_hets_mac.vcf.recode.vcf.gz.tbi",
-        f"{data_dir}/boech_gbs_allsites_filter_DP_hets_mac.vcf.recode.vcf.bed",
-        f"{data_dir}/boech_gbs_allsites_filter_DP_hets_mac.vcf.recode.vcf.rel"
+        f"{data_dir}/boech_gbs_allsites_filter_DP_hets_mac.vcf.recode.vcf.gz.tbi"
 
 
 # select biallelic SNPs
 rule select_biallelic_snps:
     input:
         ref=f"{ref_dir}/{ref_genome}",
-        vcf=f"{data_dir}/boechera_gbs_allsamples.vcff"
+        vcf=f"{data_dir}/boechera_gbs_allsamples.vcf"
     output:
         biallelic_vcf=f"{data_dir}/boechera_gbs_allsamples_biallelic_snps.vcf"
     shell:
@@ -42,23 +40,41 @@ rule select_biallelic_snps:
             -O {output.biallelic_vcf}
         """
 
-# select biallelic SNPs
-rule select_biallelic_snps:
+# select invariant sites
+rule select_invariant_sites:
     input:
         ref=f"{ref_dir}/{ref_genome}",
         vcf=f"{data_dir}/boechera_gbs_allsamples.vcf"
     output:
-        biallelic_vcf=f"{data_dir}/boechera_gbs_allsamples_invariant.vcf"
+        invariant_vcf=f"{data_dir}/boechera_gbs_allsamples_invariant.vcf"
     shell:
         """
         module load gatk/4.1
         gatk SelectVariants \
             -R {input.ref} \
             -V {input.vcf} \
-            --select-type-to-include SNP \
-            --restrict-alleles-to BIALLELIC \
-            -O {output.biallelic_vcf}
+            --select-type-to-include NO_VARIATION \
+            -O {output.invariant_vcf}
         """
+
+# define rule to only print positions with called genotypes         
+rule select_genotyped_invariant_sites:
+    input:
+        invariant_vcf=f"{data_dir}/boechera_gbs_allsamples_invariant.vcf",
+    output: 
+        invariant_vcf2=f"{data_dir}/boechera_gbs_allsamples_invariant_geno_called.vcf"
+    run:
+        with open(input.invariant_vcf, 'r') as f:
+            with open(output.invariant_vcf2, 'w') as out_file:
+                for line in f:
+                    if line.startswith('#'):
+                        print(line.strip(), file=out_file)
+                    else:
+                        fields = line.strip().split('\t')
+                        if fields[6] == "." and fields[7] == ".":
+                            continue
+                        else:
+                            print(line.strip(), file=out_file)
 
 # create variant table
 rule variant_table:
