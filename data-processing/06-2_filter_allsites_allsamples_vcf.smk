@@ -57,7 +57,9 @@ rule select_invariant_sites:
             -O {output.invariant_vcf}
         """
 
-# define rule to only print positions with called genotypes         
+# define rule to only print positions with called genotypes   
+# I ran this rule to speed up following steps
+# However, downstream analyses using windows must be specified to start at pos 1
 rule select_genotyped_invariant_sites:
     input:
         invariant_vcf=f"{data_dir}/boechera_gbs_allsamples_invariant.vcf",
@@ -80,10 +82,10 @@ rule select_genotyped_invariant_sites:
 rule variant_table:
     input:
         ref=f"{ref_dir}/{ref_genome}",
-        vcf=f"{data_dir}/boechera_gbs_matrix.vcf",
+        vcf=f"{data_dir}/boechera_gbs_allsamples_biallelic_snps.vcf",
         rscript=f"{scripts_dir}/filtering_diagnostics.R"
     output:
-        table=f"{data_dir}/boech_gbs_matrix_variant.table"
+        table=f"{data_dir}/boech_gbs_allsamples_variant.table"
     shell:
         """
         module load gatk/4.1
@@ -101,9 +103,9 @@ rule variant_table:
 rule filter_variants:
     input:
         ref=f"{ref_dir}/{ref_genome}",
-        biallelic_vcf=f"{data_dir}/boech_gbs_matrix_biallelic.vcf"
+        biallelic_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps.vcf"
     output:
-        filtered_vcf=f"{data_dir}/boech_gbs_matrix_biallelic_filter.vcf"
+        filtered_vcf=f"{data_dir}/boech_gbs_matrix_biallelic_snps_filter.vcf"
     shell:
         """
         module load gatk/4.1
