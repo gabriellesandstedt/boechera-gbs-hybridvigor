@@ -18,6 +18,7 @@ ref_genome = "GCA_018361405.1_NTU_Bstr_LTM_2.2_genomic.fa"
 # define rule all statement
 rule all:
     input:
+        expand("{i}.DP", i=range(3, 158, 2)),
         f"{data_dir}/boech_gbs_allsites_filter_DP_hets_mac.vcf.recode.vcf.gz",
         f"{data_dir}/boech_gbs_allsites_filter_DP_hets_mac.vcf.recode.vcf.gz.tbi"
 
@@ -132,10 +133,9 @@ rule extract_passed_variants:
 rule table_for_depth:
     input:
         ref=f"{ref_dir}/{ref_genome}",
-        vcf=f"{data_dir}/boechera_gbs_matrix.vcf",
-        rscript=f"{scripts_dir}/filtering_diagnostics_DP.R"
+        vcf=f"{data_dir}/boechera_gbs_allsamples.vcf",
     output:
-        dp_table=f"{data_dir}/boechera_gbs_matrix.DP.table"
+        dp_table=f"{data_dir}/boechera_gbs_allsamples.DP.table"
     shell:
         """
         module load gatk/4.1
@@ -149,13 +149,26 @@ rule table_for_depth:
         Rscript {input.rscript}
         """
 
+rule extract_DP:
+    input:
+        dp_table="boechera_gbs_allsamples.DP.table"
+        rscript=f"{scripts_dir}/filtering_diagnostics_DP.R"
+    output:
+        "{i}.DP"
+    shell:
+        """
+        cut -f {wildcards.i},{wildcards.i+1} {input.dp_table} | awk '$1 != "./." {{print $2}}' > {output}
+        
+        Rscript {input.rscript}
+        """
+
 # filter variants based on DP
 rule filter_variants_DP:
     input:
         ref=f"{ref_dir}/{ref_genome}",
-        filtered_passed_vcf=f"{data_dir}/boech_gbs_matrix_biallelic_filterPASSED.vcf"
+        filtered_passed_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filterPASSED.vcf"
     output:
-        filtered_DP_vcf=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP.vcf"
+        filtered_DP_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filterPASSED_DP.vcf"
     shell:
         """
         module load gatk/4.1
@@ -171,9 +184,44 @@ rule filter_variants_DP:
 rule select_variants:
     input:
         ref=f"{ref_dir}/{ref_genome}",
-        filtered_DP_vcf=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP.vcf"
+        filtered_DP_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filterPASSED_DP.vcf"
     output:
-        filtered_noCall_vcf=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DPfilterNoCall.vcf"
+        filtered_noCall_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filterPASSED_DPfilterNoCall.vcf"
+    shell:
+        """
+        module load gatk/4.1
+        gatk SelectVariants \
+            -R {input.ref} \
+            -V {input.filtered_DP_vcf} \
+            --set-filtered-gt-to-nocall \
+            -O {output.filtered_noCall_vcf}
+        """
+        
+        
+ rule filter_invariants_DP:
+    input:
+        ref=f"{ref_dir}/{ref_genome}",
+        filtered_passed_vcf=f"{data_dir}/boechera_gbs_allsamples_invariant_geno_called.vcf"
+    output:
+        filtered_DP_vcf=f"{data_dir}/boechera_gbs_allsamples_invariant_geno_called_DP.vcf"
+    shell:
+        """
+        module load gatk/4.1
+        gatk VariantFiltration \
+            -R {input.ref} \
+            -V {input.filtered_passed_vcf} \
+            --filter-expression "DP < 5 || DP > 140" \
+            --filter-name "DP_5-140" \
+            -O {output.filtered_DP_vcf}
+        """
+
+# select variants and set filtered genotypes to no-call
+rule select_invariants:
+    input:
+        ref=f"{ref_dir}/{ref_genome}",
+        filtered_DP_vcf=f"{data_dir}/boechera_gbs_allsamples_invariant_geno_called_DP.vcf"
+    output:
+        filtered_noCall_vcf=f"{data_dir}/boechera_gbs_allsamples_invariant_geno_called_DPfilterNoCall.vcf"
     shell:
         """
         module load gatk/4.1
@@ -185,11 +233,12 @@ rule select_variants:
         """
 
 # filter heterozygous genotypes
+# input file for R script: boech_gbs_allsamples_biallelic_snps_filterPASSED_DPfilterNoCall.vcf
 rule filter_heterozygous_genotypes:
     input:
         rscript=f"{scripts_dir}/filter_heterozygous_genotypes.R"
     output:
-        f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets.vcf"
+        f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets.vcf"
     shell:
         """
         module load R
@@ -197,13 +246,13 @@ rule filter_heterozygous_genotypes:
         """
 
 # filter minor allele count
-# mac 3/41 samples, >0.05% 
-# final vcf contains 2096 snp positions
+# mac 8/158 samples, >0.05% 
+# no. of biallelic snps: 
 rule filter_minor_allele_count:
     input:
-        filtered_hets_vcf=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets.vcf"
+        filtered_hets_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets.vcf"
     output:
-        final_vcf=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf"
+        final_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf"
     shell:
         """
         module load vcftools/0.1.15-6
@@ -212,56 +261,39 @@ rule filter_minor_allele_count:
             --remove-indels \
             --min-alleles 2 \
             --max-alleles 2 \
-            --mac 3 \
+            --mac 8 \
             --recode \
             --recode-INFO-all \
             --out {output.filtered_mac_vcf}
         """
 
-# define rule to bgzip vcf file
+# define rule to bgzip vcf files
 rule vcf_to_gzvcf:
     input:
-        final_vcf=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf"
+        var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf"
+        inv_vcf=f"{data_dir}/boechera_gbs_allsamples_invariant_geno_called_DP.vcf"
     output:
-        final_gzvcf=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf.gz",
-        tabix_gzvcf=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf.gz.tbi"
+        gz_var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf.gz",
+        gz_invar_vcf=f"{data_dir}/boechera_gbs_allsamples_invariant_geno_called_DP.vcf.gz",
+        tabix_var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf.gz.tbi",
+        tabix_invar_vcf=f"{data_dir}/boechera_gbs_allsamples_invariant_geno_called_DP.vcf.gz.tbi"
     shell:
         """
         module load htslib/1.16
-        bgzip {input.final_vcf}
-        tabix -p vcf {output.final_gzvcf}
+        bgzip {input.var_vcf}
+        bgzip {input.inv_vcf}
+        tabix -p vcf {output.gz_var_vcf}
+        tabix -p vcf {output.gz_invar_vcf}
         """
 
-# define rule to convert a vcf to a bed file         
-rule vcfgz_to_bed:
+rule combine_vcfs:
     input:
-        final_gzvcf=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf.gz"
+       gz_var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf.gz",
+       gz_invar_vcf=f"{data_dir}/boechera_gbs_allsamples_invariant_geno_called_DP.vcf.gz"
     output:
-        bed=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf"
+       final_vcf="boech_gbs_allsamples_combined_final.vcf.gz"
     shell:
         """
-        module load plink/2.0
-        plink2 --vcf {input.final_gzvcf} \
-               --set-missing-var-ids @:#[b37] \
-               --make-bed \
-               --out {output.bed} \
-               --freq \
-               --allow-extra-chr
-        """
-
-# define rule to create a square genetic relatedness matrix 
-rule calculate_relatedness:
-    input:
-        freq=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf.afreq",
-        bed=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf.bed"
-    output:
-        rel=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf.rel"
-    shell:
-        """
-        module load plink/2.0
-        plink2 --read-freq {input.freq} \
-               --bfile {input.bed} \
-               --make-rel square \
-               --allow-extra-chr \
-               --out {output.rel}
+        bcftools concat {input.vcf1} {input.vcf2} -Oz -o {final_vcf}
         """       
+        
