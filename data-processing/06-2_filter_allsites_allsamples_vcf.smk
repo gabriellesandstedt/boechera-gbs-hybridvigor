@@ -295,6 +295,7 @@ rule combine_vcfs:
        final_vcf="boech_gbs_allsamples_combined_final.vcf.gz"
     shell:
         """
+        module load bcftools/1.16
         bcftools concat {input.gz_var_vcf} {input.gz_invar_vcf} -Oz -o {output.final_vcf}
         """       
         
