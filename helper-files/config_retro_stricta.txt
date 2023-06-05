@@ -1,0 +1,17 @@
+Array   Sample
+1       ALDU
+2       BAYH
+3       BLAC
+4       CARM
+5       IRCP
+6       LPAT
+7       MEYF
+8       MILL
+9       ODEL
+10      PLCU
+11      QCDH
+12      SD01
+13      SQWL
+14      SVOV
+15      TWTN
+16      WILU
