@@ -120,9 +120,9 @@ rule filter_variants:
 # extract passed variants
 rule extract_passed_variants:
     input:
-        filtered_vcf=f"{data_dir}/boech_gbs_matrix_biallelic_filter.vcf"
+        filtered_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter.vcf"
     output:
-        filtered_passed_vcf=f"{data_dir}/boech_gbs_matrix_biallelic_filterPASSED.vcf"
+        filtered_passed_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filterPASSED.vcf"
     shell:
         """
         grep -E '^#|PASS' {input.filtered_vcf} > {output.filtered_passed_vcf}
