@@ -151,7 +151,7 @@ rule table_for_depth:
 
 rule extract_DP:
     input:
-        dp_table="boechera_gbs_allsamples.DP.table"
+        dp_table="boechera_gbs_allsamples.DP.table",
         rscript=f"{scripts_dir}/filtering_diagnostics_DP.R"
     output:
         "{i}.DP"
@@ -252,7 +252,7 @@ rule filter_minor_allele_count:
     input:
         filtered_hets_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets.vcf"
     output:
-        final_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf"
+        filtered_mac_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf"
     shell:
         """
         module load vcftools/0.1.15-6
@@ -277,6 +277,7 @@ rule vcf_to_gzvcf:
         gz_invar_vcf=f"{data_dir}/boechera_gbs_allsamples_invariant_geno_called_DP.vcf.gz",
         tabix_var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf.gz.tbi",
         tabix_invar_vcf=f"{data_dir}/boechera_gbs_allsamples_invariant_geno_called_DP.vcf.gz.tbi"
+
     shell:
         """
         module load htslib/1.16
@@ -294,6 +295,6 @@ rule combine_vcfs:
        final_vcf="boech_gbs_allsamples_combined_final.vcf.gz"
     shell:
         """
-        bcftools concat {input.vcf1} {input.vcf2} -Oz -o {final_vcf}
+        bcftools concat {input.gz_var_vcf} {input.gz_invar_vcf} -Oz -o {output.final_vcf}
         """       
         
