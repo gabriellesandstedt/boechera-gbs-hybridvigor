@@ -1,0 +1,15 @@
+Array   Sample
+1       BIGC
+2       CAPG
+3       CG05
+4       DUNG
+5       LOBG
+6       LPAT
+7       MEYC
+8       MILL
+9       PLCU
+10      QCDH
+11      SQWC
+12      SVBR
+13      TWTQ
+14      WILC
