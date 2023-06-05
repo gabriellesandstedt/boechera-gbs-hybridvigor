@@ -27,9 +27,9 @@ rule all:
 rule select_biallelic_snps:
     input:
         ref=f"{ref_dir}/{ref_genome}",
-        vcf=f"{data_dir}/boechera_gbs_allsamples.vcf"
+        vcf=f"{data_dir}/boech_gbs_allsamples.vcf"
     output:
-        biallelic_vcf=f"{data_dir}/boechera_gbs_allsamples_biallelic_snps.vcf"
+        biallelic_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps.vcf"
     shell:
         """
         module load gatk/4.1
@@ -45,9 +45,9 @@ rule select_biallelic_snps:
 rule select_invariant_sites:
     input:
         ref=f"{ref_dir}/{ref_genome}",
-        vcf=f"{data_dir}/boechera_gbs_allsamples.vcf"
+        vcf=f"{data_dir}/boech_gbs_allsamples.vcf"
     output:
-        invariant_vcf=f"{data_dir}/boechera_gbs_allsamples_invariant.vcf"
+        invariant_vcf=f"{data_dir}/boech_gbs_allsamples_invariant.vcf"
     shell:
         """
         module load gatk/4.1
@@ -63,9 +63,9 @@ rule select_invariant_sites:
 # However, downstream analyses using windows must be specified to start at pos 1
 rule select_genotyped_invariant_sites:
     input:
-        invariant_vcf=f"{data_dir}/boechera_gbs_allsamples_invariant.vcf",
+        invariant_vcf=f"{data_dir}/boech_gbs_allsamples_invariant.vcf",
     output: 
-        invariant_vcf2=f"{data_dir}/boechera_gbs_allsamples_invariant_geno_called.vcf"
+        invariant_vcf2=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called.vcf"
     run:
         with open(input.invariant_vcf, 'r') as f:
             with open(output.invariant_vcf2, 'w') as out_file:
@@ -83,7 +83,7 @@ rule select_genotyped_invariant_sites:
 rule variant_table:
     input:
         ref=f"{ref_dir}/{ref_genome}",
-        vcf=f"{data_dir}/boechera_gbs_allsamples_biallelic_snps.vcf",
+        biallelic_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps.vcf",
         rscript=f"{scripts_dir}/filtering_diagnostics.R"
     output:
         table=f"{data_dir}/boech_gbs_allsamples_variant.table"
@@ -93,7 +93,7 @@ rule variant_table:
         module load R
         gatk VariantsToTable \
             -R {input.ref} \
-            -V {input.vcf} \
+            -V {input.biallelic_vcf} \
             -F CHROM -F POS -F QUAL -F QD -F DP -F MQ -F MQRankSum -F FS -F ReadPosRankSum -F SOR -F AD \
             -O {output.table}
         
@@ -106,7 +106,7 @@ rule filter_variants:
         ref=f"{ref_dir}/{ref_genome}",
         biallelic_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps.vcf"
     output:
-        filtered_vcf=f"{data_dir}/boech_gbs_matrix_biallelic_snps_filter.vcf"
+        filtered_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter.vcf"
     shell:
         """
         module load gatk/4.1
@@ -135,7 +135,7 @@ rule table_for_depth:
         ref=f"{ref_dir}/{ref_genome}",
         vcf=f"{data_dir}/boechera_gbs_allsamples.vcf",
     output:
-        dp_table=f"{data_dir}/boechera_gbs_allsamples.DP.table"
+        dp_table=f"{data_dir}/boech_gbs_allsamples.DP.table"
     shell:
         """
         module load gatk/4.1
@@ -151,7 +151,7 @@ rule table_for_depth:
 
 rule extract_DP:
     input:
-        dp_table="boechera_gbs_allsamples.DP.table",
+        dp_table="boech_gbs_allsamples.DP.table",
         rscript=f"{scripts_dir}/filtering_diagnostics_DP.R"
     output:
         "{i}.DP"
@@ -201,9 +201,9 @@ rule select_variants:
  rule filter_invariants_DP:
     input:
         ref=f"{ref_dir}/{ref_genome}",
-        filtered_passed_vcf=f"{data_dir}/boechera_gbs_allsamples_invariant_geno_called.vcf"
+        filtered_passed_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called.vcf"
     output:
-        filtered_DP_vcf=f"{data_dir}/boechera_gbs_allsamples_invariant_geno_called_DP.vcf"
+        filtered_DP_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called_DP.vcf"
     shell:
         """
         module load gatk/4.1
@@ -219,9 +219,9 @@ rule select_variants:
 rule select_invariants:
     input:
         ref=f"{ref_dir}/{ref_genome}",
-        filtered_DP_vcf=f"{data_dir}/boechera_gbs_allsamples_invariant_geno_called_DP.vcf"
+        filtered_DP_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called_DP.vcf"
     output:
-        filtered_noCall_vcf=f"{data_dir}/boechera_gbs_allsamples_invariant_geno_called_DPfilterNoCall.vcf"
+        filtered_noCall_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called_DPfilterNoCall.vcf"
     shell:
         """
         module load gatk/4.1
@@ -271,12 +271,12 @@ rule filter_minor_allele_count:
 rule vcf_to_gzvcf:
     input:
         var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf"
-        inv_vcf=f"{data_dir}/boechera_gbs_allsamples_invariant_geno_called_DP.vcf"
+        inv_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called_DP.vcf"
     output:
         gz_var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf.gz",
-        gz_invar_vcf=f"{data_dir}/boechera_gbs_allsamples_invariant_geno_called_DP.vcf.gz",
+        gz_invar_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called_DP.vcf.gz",
         tabix_var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf.gz.tbi",
-        tabix_invar_vcf=f"{data_dir}/boechera_gbs_allsamples_invariant_geno_called_DP.vcf.gz.tbi"
+        tabix_invar_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called_DP.vcf.gz.tbi"
 
     shell:
         """
@@ -290,7 +290,7 @@ rule vcf_to_gzvcf:
 rule combine_vcfs:
     input:
        gz_var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf.gz",
-       gz_invar_vcf=f"{data_dir}/boechera_gbs_allsamples_invariant_geno_called_DP.vcf.gz"
+       gz_invar_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called_DP.vcf.gz"
     output:
        final_vcf="boech_gbs_allsamples_combined_final.vcf.gz"
     shell:
