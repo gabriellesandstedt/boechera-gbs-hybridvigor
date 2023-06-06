@@ -145,20 +145,20 @@ rule table_for_depth:
             -V {input.vcf} \
             -F CHROM -F POS -GF GT -GF DP \
             -O {output.dp_table}
-            
-        Rscript {input.rscript}
         """
 
-rule extract_DP:
+# define rule to only print rows of table if there are called genotypes
+# this rule removes positions that are missing genotypes from all samples
+rule filter_table_for_called_genotypes:
     input:
-        dp_table="boech_gbs_allsamples.DP.table",
-        rscript=f"{scripts_dir}/filtering_diagnostics_DP.R"
+        dp_table="boech_gbs_allsamples.DP.table"
+        rscript=f"{scripts_dir}/filtering_diagnostics.R"
     output:
-        "{i}.DP"
+        filtered_dp_table="filtered_boech_gbs_allsamples.DP.table"
     shell:
         """
-        cut -f {wildcards.i},{wildcards.i+1} {input.dp_table} | awk '$1 != "./." {{print $2}}' > {output}
-        
+        awk -F '\t' 'BEGIN {{OFS="\t"}} {{valid=0; for(i=3; i<=316; i++) {{if($i != "./." && $i != "0") {{valid=1; break;}}}} if(valid) {{print}}}}' {input.dp_table}  > {output.filtered_dp_table} 
+     
         Rscript {input.rscript}
         """
 
