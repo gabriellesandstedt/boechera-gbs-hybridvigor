@@ -197,7 +197,7 @@ rule select_variants:
             -O {output.filtered_noCall_vcf}
         """
         
-        
+ # define rule to filter invariants by depth       
  rule filter_invariants_DP:
     input:
         ref=f"{ref_dir}/{ref_genome}",
@@ -215,7 +215,7 @@ rule select_variants:
             -O {output.filtered_DP_vcf}
         """
 
-# select variants and set filtered genotypes to no-call
+# select invariants and set filtered genotypes to no-call
 rule select_invariants:
     input:
         ref=f"{ref_dir}/{ref_genome}",
