@@ -35,6 +35,8 @@ rule all:
     input:
         expand(f"{ref_dir}/{ref}.dict"),
         expand(f"{data_dir}/{{sample}}.g.vcf", sample=df['Sample']),
+        "/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/scripts/DB_allsamples",
+        "/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/scripts/DB_matrix",
         expand(f"{data_dir}/boechera_gbs_allsamples.vcf"),
         expand(f"{data_dir}/boechera_gbs_matrix.vcf")
 
