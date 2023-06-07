@@ -84,7 +84,7 @@ rule genomicsdb_import_allsamples:
         module load gatk/4.1
         gatk GenomicsDBImport \
             --genomicsdb-workspace-path {output.database} \
-            --batch-size 158 \
+            --batch-size 156 \
             --reader-threads 6 \
             --sample-name-map {input.map_allsamples} \
             --intervals {input.interval_list}
