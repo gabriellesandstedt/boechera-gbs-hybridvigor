@@ -38,8 +38,8 @@ rule all:
         expand(f"{data_dir}/{{sample}}.g.vcf", sample=df['Sample']),
         "/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/scripts/DB_allsamples",
         "/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/scripts/DB_matrix",
-        expand(f"{data_dir}/boechera_gbs_allsamples.vcf"),
-        expand(f"{data_dir}/boechera_gbs_matrix.vcf")
+        expand(f"{data_dir}/boech_gbs_allsamples.vcf"),
+        expand(f"{data_dir}/boech_gbs_matrix.vcf")
 
 # define rule to index reference with GATK 
 rule index_reference:
@@ -117,7 +117,7 @@ rule joint_genotype_allsamples:
         ref=f"{ref_dir}/{ref}",
         intervals=f"{data_dir}/{interval_list}"
     output:
-        boech_output=f"{data_dir}/boechera_gbs_allsamples.vcf"
+        boech_output=f"{data_dir}/boech_gbs_allsamples.vcf"
     params:
         genomicsdb="gendb://DB_allsamples"
 
@@ -139,7 +139,7 @@ rule joint_genotype_matrix:
         ref=f"{ref_dir}/{ref}",
         intervals=f"{data_dir}/{interval_list}"
     output:
-        boech_output=f"{data_dir}/boechera_gbs_matrix.vcf"
+        boech_output=f"{data_dir}/boech_gbs_matrix.vcf"
     params:
         genomicsdb="gendb://DB_matrix"
     shell:
