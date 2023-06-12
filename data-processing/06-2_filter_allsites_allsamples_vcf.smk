@@ -18,7 +18,7 @@ ref_genome = "GCA_018361405.1_NTU_Bstr_LTM_2.2_genomic.fa"
 # define rule all statement
 rule all:
     input:
-        expand("{i}.DP", i=range(3, 158, 2)),
+        expand("{i}.DP", i=range(3, 156, 2)),
         f"{data_dir}/boech_gbs_allsites_filter_DP_hets_mac.vcf.recode.vcf.gz",
         f"{data_dir}/boech_gbs_allsites_filter_DP_hets_mac.vcf.recode.vcf.gz.tbi"
 
