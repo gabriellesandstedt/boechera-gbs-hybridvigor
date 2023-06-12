@@ -133,13 +133,12 @@ rule extract_passed_variants:
 rule table_for_depth:
     input:
         ref=f"{ref_dir}/{ref_genome}",
-        vcf=f"{data_dir}/boechera_gbs_allsamples.vcf",
+        vcf=f"{data_dir}/boech_gbs_allsamples.vcf"
     output:
         dp_table=f"{data_dir}/boech_gbs_allsamples.DP.table"
     shell:
         """
         module load gatk/4.1
-        module load R
         gatk VariantsToTable \
             -R {input.ref} \
             -V {input.vcf} \
@@ -149,10 +148,11 @@ rule table_for_depth:
 
 # define rule to only print rows of table if there are called genotypes
 # this rule removes positions that are missing genotypes from all samples
+# then runs R script that assesses the depth to determine filtering thresholds
 rule filter_table_for_called_genotypes:
     input:
         dp_table="boech_gbs_allsamples.DP.table"
-        rscript=f"{scripts_dir}/filtering_diagnostics.R"
+        rscript=f"{scripts_dir}/filtering_diagnostics_DP.R"
     output:
         filtered_dp_table="filtered_boech_gbs_allsamples.DP.table"
     shell:
