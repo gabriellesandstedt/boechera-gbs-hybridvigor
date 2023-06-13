@@ -158,7 +158,7 @@ rule filter_table_for_called_genotypes:
     shell:
         """
         module load R
-        awk -F '\t' 'BEGIN {{OFS="\t"}} {{valid=0; for(i=3; i<=316; i++) {{if($i != "./." && $i != "0") {{valid=1; break;}}}} if(valid) {{print}}}}' {input.dp_table}  > {output.filtered_dp_table} 
+        awk -F '\t' 'BEGIN {{OFS="\t"}} {{valid=0; for(i=3; i<=314; i++) {{if($i != "./." && $i != "0") {{valid=1; break;}}}} if(valid) {{print}}}}' {input.dp_table}  > {output.filtered_dp_table} 
      
         Rscript {input.rscript}
         """
