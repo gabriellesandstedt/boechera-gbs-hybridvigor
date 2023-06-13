@@ -247,7 +247,7 @@ rule filter_heterozygous_genotypes:
         """
 
 # filter minor allele count
-# mac 8/158 samples, >0.05% 
+# mac 8/156 samples, >0.05% 
 # no. of biallelic snps: 
 rule filter_minor_allele_count:
     input:
