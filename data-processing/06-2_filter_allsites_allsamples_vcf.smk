@@ -176,8 +176,8 @@ rule filter_variants_DP:
         gatk VariantFiltration \
             -R {input.ref} \
             -V {input.filtered_passed_vcf} \
-            --filter-expression "DP < 5 || DP > 140" \
-            --filter-name "DP_5-140" \
+            --filter-expression "DP < 5 || DP > 200" \
+            --filter-name "DP_5-200" \
             -O {output.filtered_DP_vcf}
         """
 
@@ -198,8 +198,8 @@ rule select_variants:
             -O {output.filtered_noCall_vcf}
         """
         
- # define rule to filter invariants by depth       
- rule filter_invariants_DP:
+# define rule to filter invariants by depth       
+rule filter_invariants_DP:
     input:
         ref=f"{ref_dir}/{ref_genome}",
         filtered_passed_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called.vcf"
@@ -211,8 +211,8 @@ rule select_variants:
         gatk VariantFiltration \
             -R {input.ref} \
             -V {input.filtered_passed_vcf} \
-            --filter-expression "DP < 5 || DP > 140" \
-            --filter-name "DP_5-140" \
+            --filter-expression "DP < 5 || DP > 200" \
+            --filter-name "DP_5-200" \
             -O {output.filtered_DP_vcf}
         """
 
@@ -248,7 +248,7 @@ rule filter_heterozygous_genotypes:
 
 # filter minor allele count
 # mac 8/156 samples, >0.05% 
-# no. of biallelic snps: 
+# no. of biallelic snps: 7073
 rule filter_minor_allele_count:
     input:
         filtered_hets_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets.vcf"
@@ -271,7 +271,7 @@ rule filter_minor_allele_count:
 # define rule to bgzip vcf files
 rule vcf_to_gzvcf:
     input:
-        var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf"
+        var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf",
         inv_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called_DP.vcf"
     output:
         gz_var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf.gz",
