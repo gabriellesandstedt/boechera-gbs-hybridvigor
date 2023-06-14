@@ -296,6 +296,6 @@ rule combine_vcfs:
     shell:
         """
         module load bcftools/1.16
-        bcftools concat {input.gz_var_vcf} {input.gz_invar_vcf} -Oz -o {output.final_vcf}
+        bcftools concat {input.gz_var_vcf} {input.gz_invar_vcf} -a -Oz -o {output.final_vcf}
         """       
         
