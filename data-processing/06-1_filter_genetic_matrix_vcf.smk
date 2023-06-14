@@ -72,12 +72,17 @@ rule filter_variants:
         filtered_vcf=f"{data_dir}/boech_gbs_matrix_biallelic_filter.vcf"
     shell:
         """
-        module load gatk/4.1
+        module load gatk/4.4.0.0
         gatk VariantFiltration \
             -R {input.ref} \
             -V {input.biallelic_vcf} \
-            --filter-expression "QUAL < 0 || MQ < 40.00 || SOR > 3.000 || QD < 2.00 || FS > 60.000 || MQRankSum < -12.500 || ReadPosRankSum < -10.000 || ReadPosRankSum > 10.000" \
-            --filter-name "my_snp_filter" \
+            --filter-expression "QD < 2.0" --filter-name "QD2" \
+            --filter-expression "QUAL < 30.0" --filter-name "QUAL30" \
+            --filter-expression "SOR > 5.0" --filter-name "SOR5" \
+            --filter-expression "FS > 60.0" --filter-name "FS60" \
+            --filter-expression "MQ < 40.0" --filter-name "MQ40" \
+            --filter-expression "MQRankSum < -12.5" --filter-name "MQRankSum-12.5" \
+            --filter-expression "ReadPosRankSum < -8.0" --filter-name "ReadPosRankSum-8" \
             -O {output.filtered_vcf}
         """
 
@@ -144,7 +149,7 @@ rule select_variants:
         gatk SelectVariants \
             -R {input.ref} \
             -V {input.filtered_DP_vcf} \
-            --set-filtered-gt-to-nocall \
+            --set-filtered-gt-to-nocall TRUE \
             -O {output.filtered_noCall_vcf}
         """
 
@@ -162,7 +167,7 @@ rule filter_heterozygous_genotypes:
 
 # filter minor allele count
 # mac 3/41 samples, >0.05% 
-# final vcf contains 2096 snp positions
+# final vcf contains 2499 snp positions
 rule filter_minor_allele_count:
     input:
         filtered_hets_vcf=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets.vcf"
@@ -179,7 +184,7 @@ rule filter_minor_allele_count:
             --mac 3 \
             --recode \
             --recode-INFO-all \
-            --out {output.filtered_mac_vcf}
+            --out {output.final_vcf}
         """
 
 # define rule to bgzip vcf file
@@ -217,9 +222,9 @@ rule vcfgz_to_bed:
 rule calculate_relatedness:
     input:
         freq=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf.afreq",
-        bed=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf.bed"
+        bed=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf"
     output:
-        rel=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf.rel"
+        rel=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf"
     shell:
         """
         module load plink/2.0
