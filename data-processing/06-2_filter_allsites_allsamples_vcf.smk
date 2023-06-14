@@ -176,8 +176,8 @@ rule filter_variants_DP:
         gatk VariantFiltration \
             -R {input.ref} \
             -V {input.filtered_passed_vcf} \
-            --filter-expression "DP < 5 || DP > 200" \
-            --filter-name "DP_5-200" \
+            -G-filter "DP < 5 || DP > 200" \
+            -G-filter-name "DP_5-200" \
             -O {output.filtered_DP_vcf}
         """
 
