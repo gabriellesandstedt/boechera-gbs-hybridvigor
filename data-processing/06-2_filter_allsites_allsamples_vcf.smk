@@ -113,8 +113,13 @@ rule filter_variants:
         gatk VariantFiltration \
             -R {input.ref} \
             -V {input.biallelic_vcf} \
-            --filter-expression "QUAL < 0 || MQ < 40.00 || SOR > 3.000 || QD < 2.00 || FS > 60.000 || MQRankSum < -12.500 || ReadPosRankSum < -10.000 || ReadPosRankSum > 10.000" \
-            --filter-name "my_snp_filter" \
+            --filter-expression "QD < 2.0" --filter-name "QD2" \
+            --filter-expression "QUAL < 30.0" --filter-name "QUAL30" \
+            --filter-expression "SOR > 5.0" --filter-name "SOR5" \
+            --filter-expression "FS > 60.0" --filter-name "FS60" \
+            --filter-expression "MQ < 40.0" --filter-name "MQ40" \
+            --filter-expression "MQRankSum < -12.5" --filter-name "MQRankSum-12.5" \
+            --filter-expression "ReadPosRankSum < -8.0" --filter-name "ReadPosRankSum-8" \           
             -O {output.filtered_vcf}
         """
 
