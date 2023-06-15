@@ -100,6 +100,27 @@ rule variant_table:
         Rscript {input.rscript}
         """
 
+# create invariant table
+rule invariant_table:
+    input:
+        ref=f"{ref_dir}/{ref_genome}",
+        biallelic_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called.vcf",
+        rscript=f"{scripts_dir}/filtering_diagnostics.R"
+    output:
+        table=f"{data_dir}/boech_gbs_allsamples_invariant.table"
+    shell:
+        """
+        module load gatk/4.1
+        module load R
+        gatk VariantsToTable \
+            -R {input.ref} \
+            -V {input.biallelic_vcf} \
+            -F CHROM -F POS -F QUAL -F QD -F DP -F MQ -F MQRankSum -F FS -F ReadPosRankSum -F SOR -F AD \
+            -O {output.table}
+        
+        Rscript {input.rscript}
+        """
+
 # rule to filter variants:
 rule filter_variants:
     input:
@@ -115,7 +136,7 @@ rule filter_variants:
             -V {input.biallelic_vcf} \
             --filter-expression "QD < 2.0" --filter-name "QD2" \
             --filter-expression "QUAL < 30.0" --filter-name "QUAL30" \
-            --filter-expression "SOR > 5.0" --filter-name "SOR5" \
+            --filter-expression "SOR > 3.0" --filter-name "SOR3" \
             --filter-expression "FS > 60.0" --filter-name "FS60" \
             --filter-expression "MQ < 40.0" --filter-name "MQ40" \
             --filter-expression "MQRankSum < -12.5" --filter-name "MQRankSum-12.5" \
@@ -133,6 +154,40 @@ rule extract_passed_variants:
         """
         grep -E '^#|PASS' {input.filtered_vcf} > {output.filtered_passed_vcf}
         """
+
+
+# rule to filter invariants:
+rule filter_variants:
+    input:
+        ref=f"{ref_dir}/{ref_genome}",
+        biallelic_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called.vcf"
+    output:
+        filtered_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_filter.vcf"
+    shell:
+        """
+        module load gatk/4.1
+        gatk VariantFiltration \
+            -R {input.ref} \
+            -V {input.biallelic_vcf} \
+            --filter-expression "QUAL < 30.0" --filter-name "QUAL30" \
+            --filter-expression "MQ < 40.0" --filter-name "MQ40" \
+            --filter-expression "MQRankSum < -12.5" --filter-name "MQRankSum-12.5" \
+            --filter-expression "ReadPosRankSum < -8.0" --filter-name "ReadPosRankSum-8" \           
+            -O {output.filtered_vcf}
+        """
+
+# extract passed variants
+rule extract_passed_variants:
+    input:
+        filtered_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter.vcf"
+    output:
+        filtered_passed_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filterPASSED.vcf"
+    shell:
+        """
+        grep -E '^#|PASS' {input.filtered_vcf} > {output.filtered_passed_vcf}
+        """
+
+
 
 # extract depth information from whole-genome VCF
 rule table_for_depth:
