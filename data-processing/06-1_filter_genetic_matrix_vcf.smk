@@ -72,13 +72,13 @@ rule filter_variants:
         filtered_vcf=f"{data_dir}/boech_gbs_matrix_biallelic_filter.vcf"
     shell:
         """
-        module load gatk/4.4.0.0
+        module load gatk/4.1
         gatk VariantFiltration \
             -R {input.ref} \
             -V {input.biallelic_vcf} \
             --filter-expression "QD < 2.0" --filter-name "QD2" \
             --filter-expression "QUAL < 30.0" --filter-name "QUAL30" \
-            --filter-expression "SOR > 5.0" --filter-name "SOR5" \
+            --filter-expression "SOR > 3.0" --filter-name "SOR3" \
             --filter-expression "FS > 60.0" --filter-name "FS60" \
             --filter-expression "MQ < 40.0" --filter-name "MQ40" \
             --filter-expression "MQRankSum < -12.5" --filter-name "MQRankSum-12.5" \
@@ -167,7 +167,7 @@ rule filter_heterozygous_genotypes:
 
 # filter minor allele count
 # mac 3/41 samples, >0.05% 
-# final vcf contains 2499 snp positions
+# final vcf contains 1577 snp positions
 rule filter_minor_allele_count:
     input:
         filtered_hets_vcf=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets.vcf"
@@ -222,14 +222,15 @@ rule vcfgz_to_bed:
 rule calculate_relatedness:
     input:
         freq=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf.afreq",
-        bed=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf"
     output:
-        rel=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf"
+        rel=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf.rel"
+    params:
+        prefix = "boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf"
     shell:
         """
         module load plink/2.0
         plink2 --read-freq {input.freq} \
-               --bfile {input.bed} \
+               --bfile {params.prefix} \
                --make-rel square \
                --allow-extra-chr \
                --out {output.rel}
