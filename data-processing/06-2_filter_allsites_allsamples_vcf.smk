@@ -22,7 +22,8 @@ rule all:
         f"{data_dir}/boech_gbs_allsites_filter_DP_hets_mac.vcf.recode.vcf.gz.tbi",
         f"{data_dir}/boech_gbs_allsamples_invariant_geno_called_filter_DP.vcf.gz",
         f"{data_dir}/boech_gbs_allsamples_invariant_geno_called_filter_DP.vcf.gz.tbi",
-        f"{data_dir}/boech_gbs_allsamples_combined_final.vcf.gz"
+        f"{data_dir}/boech_gbs_allsamples_combined_final.vcf.gz",
+        f"{data_dir}/boech_gbs_allsamples_combined_final.vcf.gz.tbi"
 
 # select biallelic SNPs
 rule select_biallelic_snps:
@@ -352,10 +353,12 @@ rule combine_vcfs:
        gz_var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf.gz",
        gz_invar_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_filterPASSED_DPfilterNoCall.vcf.gz"
     output:
-       final_vcf=f"{data_dir}/boech_gbs_allsamples_combined_final.vcf.gz"
+       final_vcf=f"{data_dir}/boech_gbs_allsamples_combined_final.vcf.gz",
+       tabix_final=f"{data_dir}/boech_gbs_allsamples_combined_final.vcf.gz.tbi"
     shell:
         """
         module load bcftools/1.16
         bcftools concat {input.gz_var_vcf} {input.gz_invar_vcf} -a -Oz -o {output.final_vcf}
+        tabix -p vcf {output.final_vcf}
         """       
         
