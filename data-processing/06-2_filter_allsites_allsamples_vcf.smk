@@ -140,7 +140,7 @@ rule filter_variants:
             --filter-expression "FS > 60.0" --filter-name "FS60" \
             --filter-expression "MQ < 40.0" --filter-name "MQ40" \
             --filter-expression "MQRankSum < -12.5" --filter-name "MQRankSum-12.5" \
-            --filter-expression "ReadPosRankSum < -8.0" --filter-name "ReadPosRankSum-8" \           
+            --filter-expression "ReadPosRankSum < -8.0" --filter-name "ReadPosRankSum-8" \
             -O {output.filtered_vcf}
         """
 
@@ -155,36 +155,35 @@ rule extract_passed_variants:
         grep -E '^#|PASS' {input.filtered_vcf} > {output.filtered_passed_vcf}
         """
 
-
 # rule to filter invariants:
-rule filter_variants:
+rule filter_invariants:
     input:
         ref=f"{ref_dir}/{ref_genome}",
-        biallelic_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called.vcf"
+        invcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called.vcf"
     output:
-        filtered_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_filter.vcf"
+        filtered_invcf=f"{data_dir}/boech_gbs_allsamples_invariant_filter.vcf"
     shell:
         """
         module load gatk/4.1
         gatk VariantFiltration \
             -R {input.ref} \
-            -V {input.biallelic_vcf} \
+            -V {input.invcf} \
             --filter-expression "QUAL < 30.0" --filter-name "QUAL30" \
             --filter-expression "MQ < 40.0" --filter-name "MQ40" \
             --filter-expression "MQRankSum < -12.5" --filter-name "MQRankSum-12.5" \
-            --filter-expression "ReadPosRankSum < -8.0" --filter-name "ReadPosRankSum-8" \           
-            -O {output.filtered_vcf}
+            --filter-expression "ReadPosRankSum < -8.0" --filter-name "ReadPosRankSum-8" \
+            -O {output.filtered_invcf}
         """
 
-# extract passed variants
+# extract passed invariants
 rule extract_passed_variants:
     input:
-        filtered_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter.vcf"
+        filtered_invcf=f"{data_dir}/boech_gbs_allsamples_invariant_filter.vcf"
     output:
-        filtered_passed_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filterPASSED.vcf"
+        filtered_passed_invcf=f"{data_dir}/boech_gbs_allsamples_invariant_filterPASSED.vcf"
     shell:
         """
-        grep -E '^#|PASS' {input.filtered_vcf} > {output.filtered_passed_vcf}
+        grep -E '^#|PASS' {input.filtered_invcf} > {output.filtered_passed_invcf}
         """
 
 
@@ -262,9 +261,9 @@ rule select_variants:
 rule filter_invariants_DP:
     input:
         ref=f"{ref_dir}/{ref_genome}",
-        filtered_passed_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called.vcf"
+        filtered_passed_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_filterPASSED.vcf"
     output:
-        filtered_DP_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called_DP.vcf"
+        filtered_DP_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_filterPASSED_DP.vcf"
     shell:
         """
         module load gatk/4.1
@@ -280,9 +279,9 @@ rule filter_invariants_DP:
 rule select_invariants:
     input:
         ref=f"{ref_dir}/{ref_genome}",
-        filtered_DP_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called_DP.vcf"
+        filtered_DP_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_filterPASSED_DP.vcf"
     output:
-        filtered_noCall_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called_DPfilterNoCall.vcf"
+        filtered_noCall_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_filterPASSED_DPfilterNoCall.vcf"
     shell:
         """
         module load gatk/4.1
@@ -308,7 +307,7 @@ rule filter_heterozygous_genotypes:
 
 # filter minor allele count
 # mac 8/156 samples, >0.05% 
-# no. of biallelic snps: 7073
+# no. of biallelic snps: 5316
 rule filter_minor_allele_count:
     input:
         filtered_hets_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets.vcf"
@@ -332,12 +331,12 @@ rule filter_minor_allele_count:
 rule vcf_to_gzvcf:
     input:
         var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf",
-        inv_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called_DP.vcf"
+        inv_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_filterPASSED_DPfilterNoCall.vcf"
     output:
         gz_var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf.gz",
-        gz_invar_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called_DP.vcf.gz",
+        gz_invar_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called_filter_DP.vcf.gz",
         tabix_var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf.gz.tbi",
-        tabix_invar_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called_DP.vcf.gz.tbi"
+        tabix_invar_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called_filter_DP.vcf.gz.tbi"
     shell:
         """
         module load htslib/1.16
@@ -350,7 +349,7 @@ rule vcf_to_gzvcf:
 rule combine_vcfs:
     input:
        gz_var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf.gz",
-       gz_invar_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called_DP.vcf.gz"
+       gz_invar_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_filterPASSED_DPfilterNoCall.vcf.gz"
     output:
        final_vcf="boech_gbs_allsamples_combined_final.vcf.gz"
     shell:
