@@ -18,10 +18,11 @@ ref_genome = "GCA_018361405.1_NTU_Bstr_LTM_2.2_genomic.fa"
 # define rule all statement
 rule all:
     input:
-        expand("{i}.DP", i=range(3, 156, 2)),
         f"{data_dir}/boech_gbs_allsites_filter_DP_hets_mac.vcf.recode.vcf.gz",
-        f"{data_dir}/boech_gbs_allsites_filter_DP_hets_mac.vcf.recode.vcf.gz.tbi"
-
+        f"{data_dir}/boech_gbs_allsites_filter_DP_hets_mac.vcf.recode.vcf.gz.tbi",
+        f"{data_dir}/boech_gbs_allsamples_invariant_geno_called_filter_DP.vcf.gz",
+        f"{data_dir}/boech_gbs_allsamples_invariant_geno_called_filter_DP.vcf.gz.tbi",
+        f"{data_dir}/boech_gbs_allsamples_combined_final.vcf.gz"
 
 # select biallelic SNPs
 rule select_biallelic_snps:
@@ -351,7 +352,7 @@ rule combine_vcfs:
        gz_var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf.gz",
        gz_invar_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_filterPASSED_DPfilterNoCall.vcf.gz"
     output:
-       final_vcf="boech_gbs_allsamples_combined_final.vcf.gz"
+       final_vcf=f"{data_dir}/boech_gbs_allsamples_combined_final.vcf.gz"
     shell:
         """
         module load bcftools/1.16
