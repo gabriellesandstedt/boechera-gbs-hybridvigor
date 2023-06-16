@@ -10,6 +10,8 @@
 # define data directory
 data_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/data"
 
+# assign rule to run pixy v 1.2.3: https://pixy.readthedocs.io/en/latest/
+# outputs are pi, fst, and dxy txt files. 
 rule pixy_stats:
     input:
         vcf=f"{data_dir}/boech_gbs_allsamples_combined_final.vcf.gz",
