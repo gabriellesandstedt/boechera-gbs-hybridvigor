@@ -5,6 +5,7 @@
 ## AUTHOR: Gabrielle Sandstedt
 ## command to run snakemake script: snakemake --rerun-incomplete --latency-wait 60 --cores 4 -s pixy.smk
 ################################################################################
+## Pixy documentation: Manuscript: Korunes, K.L. and Samuk, K. (2021), pixy: Unbiased estimation of nucleotide diversity and divergence in the presence of missing data. Molecular Ecology Resources. Accepted Author Manuscript. https://doi.org/10.1111/1755-0998.13326
 ################################################################################
 # define data directory
 data_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/data"
