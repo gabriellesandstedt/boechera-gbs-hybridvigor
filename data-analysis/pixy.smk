@@ -13,7 +13,7 @@ data_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/data"
 rule pixy_stats:
     input:
         vcf=f"{data_dir}/boech_gbs_allsamples_combined_final.vcf.gz",
-        pop_file=f"{data_dir}/pop.txt"
+        pop_file=f"{data_dir}/pop_pixy.txt"
     output:
         pixy_output=f"{data_dir}/pixy_stats.txt"
     params:
