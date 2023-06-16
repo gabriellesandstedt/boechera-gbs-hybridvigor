@@ -19,7 +19,7 @@ rule pixy_stats:
     output:
         pixy_output=f"{data_dir}/pixy_stats.txt"
     params:
-        window_size=100000,
+        window_size=1000000,
         n_cores=4
     shell:
         """
