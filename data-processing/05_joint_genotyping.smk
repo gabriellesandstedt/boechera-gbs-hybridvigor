@@ -39,7 +39,8 @@ rule all:
         "/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/scripts/DB_allsamples",
         "/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/scripts/DB_matrix",
         expand(f"{data_dir}/boech_gbs_allsamples.vcf"),
-        expand(f"{data_dir}/boech_gbs_matrix.vcf")
+        expand(f"{data_dir}/boech_gbs_matrix.vcf"),
+        expand(f"{data_dir}/boech_gbs_retro_allsites.vcf")
 
 # define rule to index reference with GATK 
 rule index_reference:
@@ -150,5 +151,26 @@ rule joint_genotype_matrix:
             -V {params.genomicsdb} \
             -L {input.intervals} \
             --allow-old-rms-mapping-quality-annotation-data \
+            -O {output.boech_output}
+        """
+
+# define rule to joint genotype for samples used in the genetic matrix at all sites (including invariants)     
+rule joint_genotype_retro_allsites:
+    input:
+        ref=f"{ref_dir}/{ref}",
+        intervals=f"{data_dir}/{interval_list}"
+    output:
+        boech_output=f"{data_dir}/boech_gbs_retro_allsites.vcf"
+    params:
+        genomicsdb="gendb://DB_matrix"
+    shell:
+        """
+        module load gatk/4.1
+        gatk GenotypeGVCFs \
+            -R {input.ref} \
+            -V {params.genomicsdb} \
+            -L {input.intervals} \
+            --allow-old-rms-mapping-quality-annotation-data \
+            --all-sites \
             -O {output.boech_output}
         """
