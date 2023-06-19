@@ -18,20 +18,20 @@ ref_genome = "GCA_018361405.1_NTU_Bstr_LTM_2.2_genomic.fa"
 # define rule all statement
 rule all:
     input:
-        f"{data_dir}/boech_gbs_allsites_filter_DP_hets_mac.vcf.recode.vcf.gz",
-        f"{data_dir}/boech_gbs_allsites_filter_DP_hets_mac.vcf.recode.vcf.gz.tbi",
-        f"{data_dir}/boech_gbs_allsamples_invariant_geno_called_filter_DP.vcf.gz",
-        f"{data_dir}/boech_gbs_allsamples_invariant_geno_called_filter_DP.vcf.gz.tbi",
-        f"{data_dir}/boech_gbs_allsamples_combined_final.vcf.gz",
-        f"{data_dir}/boech_gbs_allsamples_combined_final.vcf.gz.tbi"
+        f"{data_dir}/boech_gbs_retro_allsites_filter_DP_hets_mac.vcf.recode.vcf.gz",
+        f"{data_dir}/boech_gbs_retro_allsites_filter_DP_hets_mac.vcf.recode.vcf.gz.tbi",
+        f"{data_dir}/boech_gbs_retro_allsites_invariant_geno_called_filter_DP.vcf.gz",
+        f"{data_dir}/boech_gbs_retro_allsites_invariant_geno_called_filter_DP.vcf.gz.tbi",
+        f"{data_dir}/boech_gbs_retro_allsites_combined_final.vcf.gz",
+        f"{data_dir}/boech_gbs_retro_allsites_combined_final.vcf.gz.tbi"
 
 # select biallelic SNPs
 rule select_biallelic_snps:
     input:
         ref=f"{ref_dir}/{ref_genome}",
-        vcf=f"{data_dir}/boech_gbs_allsamples.vcf"
+        vcf=f"{data_dir}/boech_gbs_retro_allsites.vcf"
     output:
-        biallelic_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps.vcf"
+        biallelic_vcf=f"{data_dir}/boech_gbs_retro_allsites_biallelic_snps.vcf"
     shell:
         """
         module load gatk/4.1
@@ -47,9 +47,9 @@ rule select_biallelic_snps:
 rule select_invariant_sites:
     input:
         ref=f"{ref_dir}/{ref_genome}",
-        vcf=f"{data_dir}/boech_gbs_allsamples.vcf"
+        vcf=f"{data_dir}/boech_gbs_retro_allsites.vcf"
     output:
-        invariant_vcf=f"{data_dir}/boech_gbs_allsamples_invariant.vcf"
+        invariant_vcf=f"{data_dir}/boech_gbs_retro_allsites_invariant.vcf"
     shell:
         """
         module load gatk/4.1
@@ -65,9 +65,9 @@ rule select_invariant_sites:
 # However, downstream analyses using windows must be specified to start at pos 1
 rule select_genotyped_invariant_sites:
     input:
-        invariant_vcf=f"{data_dir}/boech_gbs_allsamples_invariant.vcf",
+        invariant_vcf=f"{data_dir}/boech_gbs_retro_allsites_invariant.vcf",
     output: 
-        invariant_vcf2=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called.vcf"
+        invariant_vcf2=f"{data_dir}/boech_gbs_retro_allsites_invariant_geno_called.vcf"
     run:
         with open(input.invariant_vcf, 'r') as f:
             with open(output.invariant_vcf2, 'w') as out_file:
@@ -85,10 +85,10 @@ rule select_genotyped_invariant_sites:
 rule variant_table:
     input:
         ref=f"{ref_dir}/{ref_genome}",
-        biallelic_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps.vcf",
+        biallelic_vcf=f"{data_dir}/boech_gbs_retro_allsites_biallelic_snps.vcf",
         rscript=f"{scripts_dir}/filtering_diagnostics.R"
     output:
-        table=f"{data_dir}/boech_gbs_allsamples_variant.table"
+        table=f"{data_dir}/boech_gbs_retro_allsites_variant.table"
     shell:
         """
         module load gatk/4.1
@@ -106,10 +106,10 @@ rule variant_table:
 rule invariant_table:
     input:
         ref=f"{ref_dir}/{ref_genome}",
-        biallelic_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called.vcf",
+        biallelic_vcf=f"{data_dir}/boech_gbs_retro_allsites_invariant_geno_called.vcf",
         rscript=f"{scripts_dir}/filtering_diagnostics.R"
     output:
-        table=f"{data_dir}/boech_gbs_allsamples_invariant.table"
+        table=f"{data_dir}/boech_gbs_retro_allsites_invariant.table"
     shell:
         """
         module load gatk/4.1
@@ -127,9 +127,9 @@ rule invariant_table:
 rule filter_variants:
     input:
         ref=f"{ref_dir}/{ref_genome}",
-        biallelic_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps.vcf"
+        biallelic_vcf=f"{data_dir}/boech_gbs_retro_allsites_biallelic_snps.vcf"
     output:
-        filtered_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter.vcf"
+        filtered_vcf=f"{data_dir}/boech_gbs_retro_allsites_biallelic_snps_filter.vcf"
     shell:
         """
         module load gatk/4.1
@@ -149,9 +149,9 @@ rule filter_variants:
 # extract passed variants
 rule extract_passed_variants:
     input:
-        filtered_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter.vcf"
+        filtered_vcf=f"{data_dir}/boech_gbs_retro_allsites_biallelic_snps_filter.vcf"
     output:
-        filtered_passed_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filterPASSED.vcf"
+        filtered_passed_vcf=f"{data_dir}/boech_gbs_retro_allsites_biallelic_snps_filterPASSED.vcf"
     shell:
         """
         grep -E '^#|PASS' {input.filtered_vcf} > {output.filtered_passed_vcf}
@@ -161,9 +161,9 @@ rule extract_passed_variants:
 rule filter_invariants:
     input:
         ref=f"{ref_dir}/{ref_genome}",
-        invcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called.vcf"
+        invcf=f"{data_dir}/boech_gbs_retro_allsites_invariant_geno_called.vcf"
     output:
-        filtered_invcf=f"{data_dir}/boech_gbs_allsamples_invariant_filter.vcf"
+        filtered_invcf=f"{data_dir}/boech_gbs_retro_allsites_invariant_filter.vcf"
     shell:
         """
         module load gatk/4.1
@@ -180,9 +180,9 @@ rule filter_invariants:
 # extract passed invariants
 rule extract_passed_variants:
     input:
-        filtered_invcf=f"{data_dir}/boech_gbs_allsamples_invariant_filter.vcf"
+        filtered_invcf=f"{data_dir}/boech_gbs_retro_allsites_invariant_filter.vcf"
     output:
-        filtered_passed_invcf=f"{data_dir}/boech_gbs_allsamples_invariant_filterPASSED.vcf"
+        filtered_passed_invcf=f"{data_dir}/boech_gbs_retro_allsites_invariant_filterPASSED.vcf"
     shell:
         """
         grep -E '^#|PASS' {input.filtered_invcf} > {output.filtered_passed_invcf}
@@ -194,9 +194,9 @@ rule extract_passed_variants:
 rule table_for_depth:
     input:
         ref=f"{ref_dir}/{ref_genome}",
-        vcf=f"{data_dir}/boech_gbs_allsamples.vcf"
+        vcf=f"{data_dir}/boech_gbs_retro_allsites.vcf"
     output:
-        dp_table=f"{data_dir}/boech_gbs_allsamples.DP.table"
+        dp_table=f"{data_dir}/boech_gbs_retro_allsites.DP.table"
     shell:
         """
         module load gatk/4.1
@@ -212,14 +212,14 @@ rule table_for_depth:
 # then runs R script that assesses the depth to determine filtering thresholds
 rule filter_table_for_called_genotypes:
     input:
-        dp_table="boech_gbs_allsamples.DP.table"
+        dp_table="boech_gbs_retro_allsites.DP.table"
         rscript=f"{scripts_dir}/filtering_diagnostics_DP.R"
     output:
-        filtered_dp_table="filtered_boech_gbs_allsamples.DP.table"
+        filtered_dp_table="filtered_boech_gbs_retro_allsites.DP.table"
     shell:
         """
         module load R
-        awk -F '\t' 'BEGIN {{OFS="\t"}} {{valid=0; for(i=3; i<=314; i++) {{if($i != "./." && $i != "0") {{valid=1; break;}}}} if(valid) {{print}}}}' {input.dp_table}  > {output.filtered_dp_table} 
+        awk -F '\t' 'BEGIN {{OFS="\t"}} {{valid=0; for(i=3; i<=84; i++) {{if($i != "./." && $i != "0") {{valid=1; break;}}}} if(valid) {{print}}}}' {input.dp_table}  > {output.filtered_dp_table} 
      
         Rscript {input.rscript}
         """
@@ -228,17 +228,17 @@ rule filter_table_for_called_genotypes:
 rule filter_variants_DP:
     input:
         ref=f"{ref_dir}/{ref_genome}",
-        filtered_passed_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filterPASSED.vcf"
+        filtered_passed_vcf=f"{data_dir}/boech_gbs_retro_allsites_biallelic_snps_filterPASSED.vcf"
     output:
-        filtered_DP_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filterPASSED_DP.vcf"
+        filtered_DP_vcf=f"{data_dir}/boech_gbs_retro_allsites_biallelic_snps_filterPASSED_DP.vcf"
     shell:
         """
         module load gatk/4.1
         gatk VariantFiltration \
             -R {input.ref} \
             -V {input.filtered_passed_vcf} \
-            -G-filter "DP < 5 || DP > 200" \
-            -G-filter-name "DP_5-200" \
+            -G-filter "DP < 5 || DP > 140" \
+            -G-filter-name "DP_5-140" \
             -O {output.filtered_DP_vcf}
         """
 
@@ -246,9 +246,9 @@ rule filter_variants_DP:
 rule select_variants:
     input:
         ref=f"{ref_dir}/{ref_genome}",
-        filtered_DP_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filterPASSED_DP.vcf"
+        filtered_DP_vcf=f"{data_dir}/boech_gbs_retro_allsites_biallelic_snps_filterPASSED_DP.vcf"
     output:
-        filtered_noCall_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filterPASSED_DPfilterNoCall.vcf"
+        filtered_noCall_vcf=f"{data_dir}/boech_gbs_retro_allsites_biallelic_snps_filterPASSED_DPfilterNoCall.vcf"
     shell:
         """
         module load gatk/4.1
@@ -263,17 +263,17 @@ rule select_variants:
 rule filter_invariants_DP:
     input:
         ref=f"{ref_dir}/{ref_genome}",
-        filtered_passed_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_filterPASSED.vcf"
+        filtered_passed_vcf=f"{data_dir}/boech_gbs_retro_allsites_invariant_filterPASSED.vcf"
     output:
-        filtered_DP_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_filterPASSED_DP.vcf"
+        filtered_DP_vcf=f"{data_dir}/boech_gbs_retro_allsites_invariant_filterPASSED_DP.vcf"
     shell:
         """
         module load gatk/4.1
         gatk VariantFiltration \
             -R {input.ref} \
             -V {input.filtered_passed_vcf} \
-            -G-filter "DP < 5 || DP > 200" \
-            -G-filter-name "DP_5-200" \
+            -G-filter "DP < 5 || DP > 140" \
+            -G-filter-name "DP_5-140" \
             -O {output.filtered_DP_vcf}
         """
 
@@ -281,9 +281,9 @@ rule filter_invariants_DP:
 rule select_invariants:
     input:
         ref=f"{ref_dir}/{ref_genome}",
-        filtered_DP_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_filterPASSED_DP.vcf"
+        filtered_DP_vcf=f"{data_dir}/boech_gbs_retro_allsites_invariant_filterPASSED_DP.vcf"
     output:
-        filtered_noCall_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_filterPASSED_DPfilterNoCall.vcf"
+        filtered_noCall_vcf=f"{data_dir}/boech_gbs_retro_allsites_invariant_filterPASSED_DPfilterNoCall.vcf"
     shell:
         """
         module load gatk/4.1
@@ -295,12 +295,12 @@ rule select_invariants:
         """
 
 # filter heterozygous genotypes
-# input file for R script: boech_gbs_allsamples_biallelic_snps_filterPASSED_DPfilterNoCall.vcf
+# input file for R script: boech_gbs_retro_allsites_biallelic_snps_filterPASSED_DPfilterNoCall.vcf
 rule filter_heterozygous_genotypes:
     input:
         rscript=f"{scripts_dir}/filter_heterozygous_genotypes.R"
     output:
-        f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets.vcf"
+        f"{data_dir}/boech_gbs_retro_allsites_biallelic_snps_filter_DP_hets.vcf"
     shell:
         """
         module load R
@@ -308,13 +308,13 @@ rule filter_heterozygous_genotypes:
         """
 
 # filter minor allele count
-# mac 8/156 samples, >0.05% 
-# no. of biallelic snps: 5316
+# mac 3/41 samples, >0.05% 
+# 1577 snp positions , same as genetic related matrix
 rule filter_minor_allele_count:
     input:
-        filtered_hets_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets.vcf"
+        filtered_hets_vcf=f"{data_dir}/boech_gbs_retro_allsites_biallelic_snps_filter_DP_hets.vcf"
     output:
-        filtered_mac_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf"
+        filtered_mac_vcf=f"{data_dir}/boech_gbs_retro_allsites_biallelic_snps_filter_DP_hets_mac.vcf"
     shell:
         """
         module load vcftools/0.1.15-6
@@ -323,7 +323,7 @@ rule filter_minor_allele_count:
             --remove-indels \
             --min-alleles 2 \
             --max-alleles 2 \
-            --mac 8 \
+            --mac 3 \
             --recode \
             --recode-INFO-all \
             --out {output.filtered_mac_vcf}
@@ -332,13 +332,13 @@ rule filter_minor_allele_count:
 # define rule to bgzip vcf files
 rule vcf_to_gzvcf:
     input:
-        var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf",
-        inv_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_filterPASSED_DPfilterNoCall.vcf"
+        var_vcf=f"{data_dir}/boech_gbs_retro_allsites_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf",
+        inv_vcf=f"{data_dir}/boech_gbs_retro_allsites_invariant_filterPASSED_DPfilterNoCall.vcf"
     output:
-        gz_var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf.gz",
-        gz_invar_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called_filter_DP.vcf.gz",
-        tabix_var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf.gz.tbi",
-        tabix_invar_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called_filter_DP.vcf.gz.tbi"
+        gz_var_vcf=f"{data_dir}/boech_gbs_retro_allsites_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf.gz",
+        gz_invar_vcf=f"{data_dir}/boech_gbs_retro_allsites_invariant_filterPASSED_DPfilterNoCall.vcf.gz",
+        tabix_var_vcf=f"{data_dir}/boech_gbs_retro_allsites_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf.gz.tbi",
+        tabix_invar_vcf=f"{data_dir}/boech_gbs_retro_allsites_invariant_filterPASSED_DPfilterNoCall.vcf.gz.tbi"
     shell:
         """
         module load htslib/1.16
@@ -350,13 +350,14 @@ rule vcf_to_gzvcf:
 
 rule combine_vcfs:
     input:
-       gz_var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf.gz",
-       gz_invar_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_filterPASSED_DPfilterNoCall.vcf.gz"
+       gz_var_vcf=f"{data_dir}/boech_gbs_retro_allsites_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf.gz",
+       gz_invar_vcf=f"{data_dir}/boech_gbs_retro_allsites_invariant_filterPASSED_DPfilterNoCall.vcf.gz"
     output:
-       final_vcf=f"{data_dir}/boech_gbs_allsamples_combined_final.vcf.gz",
-       tabix_final=f"{data_dir}/boech_gbs_allsamples_combined_final.vcf.gz.tbi"
+       final_vcf=f"{data_dir}/boech_gbs_retro_allsites_combined_final.vcf.gz",
+       tabix_final=f"{data_dir}/boech_gbs_retro_allsites_combined_final.vcf.gz.tbi"
     shell:
         """
+        module load htslib/1.16
         module load bcftools/1.16
         bcftools concat {input.gz_var_vcf} {input.gz_invar_vcf} -a -Oz -o {output.final_vcf}
         tabix -p vcf {output.final_vcf}
