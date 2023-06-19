@@ -336,9 +336,9 @@ rule vcf_to_gzvcf:
         inv_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_filterPASSED_DPfilterNoCall.vcf"
     output:
         gz_var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf.gz",
-        gz_invar_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called_filter_DP.vcf.gz",
+        gz_invar_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_filterPASSED_DPfilterNoCall.vcf.gz",
         tabix_var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf.gz.tbi",
-        tabix_invar_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called_filter_DP.vcf.gz.tbi"
+        tabix_invar_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_filterPASSED_DPfilterNoCall.vcf.gz.tbi"
     shell:
         """
         module load htslib/1.16
@@ -357,6 +357,7 @@ rule combine_vcfs:
        tabix_final=f"{data_dir}/boech_gbs_allsamples_combined_final.vcf.gz.tbi"
     shell:
         """
+        module load htslib/1.16
         module load bcftools/1.16
         bcftools concat {input.gz_var_vcf} {input.gz_invar_vcf} -a -Oz -o {output.final_vcf}
         tabix -p vcf {output.final_vcf}
