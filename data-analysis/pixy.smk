@@ -14,8 +14,8 @@ data_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/data"
 # outputs are pi, fst, and dxy txt files. 
 rule pixy_stats:
     input:
-        vcf=f"{data_dir}/boech_gbs_allsamples_combined_final.vcf.gz",
-        pop_file=f"{data_dir}/pop_pixy.txt"
+        vcf=f"{data_dir}/boech_gbs_retro_allsites_combined_final.vcf.gz",
+        pop_file=f"{data_dir}/pop_allretro.txt"
     output:
         pixy_output=f"{data_dir}/pixy_stats.txt"
     params:
@@ -24,6 +24,7 @@ rule pixy_stats:
     shell:
         """
         ml pixy/1.2.3
+        ml htslib/1.16
         pixy --stats pi fst dxy \
         --vcf {input.vcf} \
         --populations {input.pop_file} \
