@@ -202,7 +202,7 @@ rule vcf_to_gzvcf:
         """
 
 # define rule to convert a vcf to a bed file         
-rule vcfgz_to_bed:
+rule gzvcf_to_bed:
     input:
         final_gzvcf=f"{data_dir}/boech_gbs_matrix_biallelic_filter_DP_hets_mac.vcf.recode.vcf.gz"
     output:
