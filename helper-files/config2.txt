@@ -1,4 +1,4 @@
-Array	Samples
+Array  Sample
 1	am1_1
 2	am1_2
 3	am1_3
