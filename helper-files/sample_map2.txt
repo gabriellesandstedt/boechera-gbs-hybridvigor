@@ -30,6 +30,7 @@ pw2_pool        /scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/data/pw2_pool.
 pw3_pool        /scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/data/pw3_pool.g.vcf
 pw4_pool        /scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/data/pw4_pool.g.vcf
 pw5_pool        /scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/data/pw5_pool.g.vcf
+pw6b_pool        /scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/data/pw6b_pool.g.vcf
 pw7_pool        /scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/data/pw7_pool.g.vcf
 pw8b_pool       /scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/data/pw8b_pool.g.vcf
 pw9_pool        /scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/data/pw9_pool.g.vcf
