@@ -30,8 +30,8 @@ Array   Sample
 29      pw2_pool
 30      pw3_pool
 31      pw4_pool
-32      pw6b_pool
-33      pw5_pool
+32      pw5_pool
+33      pw6b_pool
 34      pw7_pool
 35      pw8b_pool
 36      pw9_pool
