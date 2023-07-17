@@ -106,7 +106,7 @@ rule genomicsdb_import_matrix:
         module load gatk/4.1
         gatk GenomicsDBImport \
             --genomicsdb-workspace-path {output.database} \
-            --batch-size 41 \
+            --batch-size 42 \
             --reader-threads 6 \
             --sample-name-map {input.map_matrix} \
             --intervals {input.interval_list}
