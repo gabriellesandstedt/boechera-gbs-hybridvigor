@@ -60,7 +60,7 @@ rule index_reference:
 rule hap_caller:
     input:
         ref = f"{ref_dir}/{ref}",
-        bam = f"{data_dir}/{{sample}}_sorted_RG.bam",
+        bam = f"{data_dir}/{sample}_sorted_RG.bam",
         intervals = f"{data_dir}/{interval_list}"
     output:
         gvcf = f"{data_dir}/{{sample}}.g.vcf"
