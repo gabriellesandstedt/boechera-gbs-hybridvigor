@@ -35,6 +35,7 @@ ref = "GCA_018361405.1_NTU_Bstr_LTM_2.2_genomic.fa"
 rule all:
     input:
         expand(f"{ref_dir}/{ref}.dict"),
+        expand(f"{data_dir}/{{sample}}_sorted_RG.bam", sample=df['Sample']),
         expand(f"{data_dir}/{{sample}}.g.vcf", sample=df['Sample']),
         "/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/scripts/DB_allsamples",
         "/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/scripts/DB_matrix",
@@ -60,7 +61,7 @@ rule index_reference:
 rule hap_caller:
     input:
         ref = f"{ref_dir}/{ref}",
-        bam = f"{data_dir}/{sample}_sorted_RG.bam",
+        bam = f"{data_dir}/{{sample}}_sorted_RG.bam",
         intervals = f"{data_dir}/{interval_list}"
     output:
         gvcf = f"{data_dir}/{{sample}}.g.vcf"
