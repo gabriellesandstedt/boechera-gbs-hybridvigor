@@ -178,7 +178,7 @@ rule filter_invariants:
         """
 
 # extract passed invariants
-rule extract_passed_variants:
+rule extract_passed_invariants:
     input:
         filtered_invcf=f"{data_dir}/boech_gbs_retro_allsites_invariant_filter.vcf"
     output:
