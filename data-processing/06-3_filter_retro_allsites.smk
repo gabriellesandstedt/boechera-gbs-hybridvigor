@@ -212,10 +212,10 @@ rule table_for_depth:
 # then runs R script that assesses the depth to determine filtering thresholds
 rule filter_table_for_called_genotypes:
     input:
-        dp_table="boech_gbs_retro_allsites.DP.table"
+        dp_table=f"{data_dir}/boech_gbs_retro_allsites.DP.table"
         rscript=f"{scripts_dir}/filtering_diagnostics_DP.R"
     output:
-        filtered_dp_table="filtered_boech_gbs_retro_allsites.DP.table"
+        filtered_dp_table=f"{data_dir}/filtered_boech_gbs_retro_allsites.DP.table"
     shell:
         """
         module load R
