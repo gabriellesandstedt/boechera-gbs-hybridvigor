@@ -272,8 +272,8 @@ rule filter_invariants_DP:
         gatk VariantFiltration \
             -R {input.ref} \
             -V {input.filtered_passed_vcf} \
-            -G-filter "DP < 5 || DP > 140" \
-            -G-filter-name "DP_5-140" \
+            -G-filter "DP < 5 || DP > 150" \
+            -G-filter-name "DP_5-150" \
             -O {output.filtered_DP_vcf}
         """
 
