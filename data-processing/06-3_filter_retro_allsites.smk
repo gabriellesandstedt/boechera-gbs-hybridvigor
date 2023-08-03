@@ -308,8 +308,8 @@ rule filter_heterozygous_genotypes:
         """
 
 # filter minor allele count
-# mac 3/41 samples, >0.05% 
-# 1577 snp positions , same as genetic related matrix
+# mac 3/42 samples, >0.05% 
+# final allele count 1633
 rule filter_minor_allele_count:
     input:
         filtered_hets_vcf=f"{data_dir}/boech_gbs_retro_allsites_biallelic_snps_filter_DP_hets.vcf"
@@ -347,7 +347,7 @@ rule vcf_to_gzvcf:
         tabix -p vcf {output.gz_var_vcf}
         tabix -p vcf {output.gz_invar_vcf}
         """
-
+# define rule to combine snp and invariant vcfs 
 rule combine_vcfs:
     input:
        gz_var_vcf=f"{data_dir}/boech_gbs_retro_allsites_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf.gz",
