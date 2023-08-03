@@ -309,7 +309,7 @@ rule filter_heterozygous_genotypes:
 
 # filter minor allele count
 # mac 3/42 samples, >0.05% 
-# final allele count 1633
+# final allele count 1564
 rule filter_minor_allele_count:
     input:
         filtered_hets_vcf=f"{data_dir}/boech_gbs_retro_allsites_biallelic_snps_filter_DP_hets.vcf"
