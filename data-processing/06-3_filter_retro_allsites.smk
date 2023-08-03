@@ -363,3 +363,37 @@ rule combine_vcfs:
         tabix -p vcf {output.final_vcf}
         """       
         
+# define rule to convert snps vcf to a bed file         
+rule gzvcf_to_bed:
+    input:
+        final_gzvcf=f"{data_dir}/boech_gbs_retro_allsites_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf.gz"
+    output:
+        bed=f"{data_dir}/boech_gbs_retro_allsites_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf"
+    shell:
+        """
+        module load plink/2.0
+        plink2 --vcf {input.final_gzvcf} \
+               --set-missing-var-ids @:#[b37] \
+               --make-bed \
+               --out {output.bed} \
+               --freq \
+               --allow-extra-chr
+        """
+
+# define rule to create a square genetic relatedness matrix 
+rule calculate_relatedness:
+    input:
+        freq=f"{data_dir}/boech_gbs_retro_allsites_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf.afreq",
+    output:
+        rel=f"{data_dir}/boech_gbs_retro_allsites_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf.rel"
+    params:
+        prefix = "boech_gbs_retro_allsites_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf"
+    shell:
+        """
+        module load plink/2.0
+        plink2 --read-freq {input.freq} \
+               --bfile {params.prefix} \
+               --make-rel square \
+               --allow-extra-chr \
+               --out {output.rel}
+        """       
