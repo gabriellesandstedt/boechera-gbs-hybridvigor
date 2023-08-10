@@ -32,7 +32,6 @@ rule noSRF2s:
         bcftools view -s "^$samples_to_remove" -o {output.noSRF2s_vcf} {input.vcf}
         """
 
-
 # define rule to subset vcf to 
 # bcftools: 
 rule noSRF2s:
