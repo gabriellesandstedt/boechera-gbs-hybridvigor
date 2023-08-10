@@ -21,27 +21,30 @@ rule all:
 # bcftools: 
 rule noSRF2s:
     input:
-        bam=f"{data_dir}/{{sample}}_sorted.bam"
+        vcf=f"{data_dir}/{vcf}"
     output:
-        RG_bam=f"{data_dir}/{{sample}}_sorted_RG.bam"
+        noSRF2s_vcf=f"{data_dir}/allsamples_allsites_final_snps_subset_noSRF2s.vcf"
     shell:
         """
-        module bcftools/1.16
-        echo -e "\\n["$(date)"]\\n Add read groups..\\n"
-        java -jar $PICARD AddOrReplaceReadGroups \
-            I={input.bam} \
-            O={output.RG_bam} \
-            RGID={wildcards.sample} \
-            RGLB=lib_{wildcards.sample} \
-            RGPL=illumina \
-            RGPU=unit_{wildcards.sample} \
-            RGSM={wildcards.sample}
+        module load bcftools/1.16
+        echo -e '\\n['$(date)']\\n subset vcf ..\\n'
+        samples_to_remove="EH_11,EH_4,EH_9,EJ1_1,EJ1_2,EJ1_4,EJ2_1,EJ2_3,EJ2_7,ET1_12,ET1_6,ET1_9,ET1_ex1,ET2_11,ET2_3,ET2_6,EU4_3,EU4_7,EU4_8,EU5_1,EU5_2,EU5_5"
+        bcftools view -s "^$samples_to_remove" -o {output.noSRF2s_vcf} {input.vcf}
         """
-        
-bcftools/1.16
 
 
-samples_to_remove="sample1,sample2"
+# define rule to subset vcf to 
+# bcftools: 
+rule noSRF2s:
+    input:
+        vcf=f"{data_dir}/{vcf}"
+    output:
+        onlyRetros_vcf=f"{data_dir}/allsamples_allsites_final_snps_subset_onlyRetros.vcf"
+    shell:
+        """
+        module load bcftools/1.16
+        echo -e '\\n['$(date)']\\n subset vcf ..\\n'
+        samples_to_remove="ALDU_SR,BAYH_SR,BLAC_SR,CARM_SR,EH_11,EH_4,EH_9,EJ1_1,EJ1_2,EJ1_4,EJ2_1,EJ2_3,EJ2_7,ET1_12,ET1_6,ET1_9,ET1_ex1,ET2_11,ET2_3,ET2_6,EU4_3,EU4_7,EU4_8,EU5_1,EU5_2,EU5_5,HESS_pool,IRCP_SR,JAM_pool,LPAT_SR,LTM,MEYF_SR,MILL_SR,ODEL_SR,PLCU_SR,QCDH_SR,SD01_SR,SQWL_SR,SVOV_SR,TWMUp_pool,TWTN_SR,Usilv_pool,WILU_SR"
+        bcftools view -s "^$samples_to_remove" -o {output.onlyRetros_vcf} {input.vcf}
+        """
 
-# Create a new VCF file without the specified samples
-bcftools view -s "^$samples_to_remove" -o output.vcf input.vcf
