@@ -14,8 +14,12 @@ rule all:
     input:
         f"{data_dir}/allsamples_allsites_final_snps_subset_noSRF2s.vcf",
         f"{data_dir}/allsamples_allsites_final_snps_subset_noSRF2s_split.mpgl",
+        f"{data_dir}/allsamples_allsites_final_snps_subset_noSRF2s_chr_pos.txt",
+        f"{data_dir}/noSRF2_final.mgpl",
         f"{data_dir}/allsamples_allsites_final_snps_subset_onlyRetros_split.txt",
-        f"{data_dir}/allsamples_allsites_final_snps_subset_onlyRetros_split.mpgl"
+        f"{data_dir}/allsamples_allsites_final_snps_subset_onlyRetros_split.mpgl",
+        f"{data_dir}/allsamples_allsites_final_snps_subset_onlyRetros_chr_pos.txt",
+        f"{data_dir}/onlyRetros_final.mgpl"
 
 rule split_noSRF2_vcf:
     input: 
@@ -149,6 +153,9 @@ rule chrpos_onlyRetros:
         grep -v '^#' {input.onlyRetros_mvcf} | cut -f 1-2 | awk -F '\t' '{{OFS=":"; print $1, $2}}' >> {output.onlyRetros_chrpos}
         """
 
+# for the final mgpl file, I manually replaced row 1 from the output of this rule. 
+# first row has two columns (space delimited). col 1 | number of indiviuals, col 2| number of loci
+# second row are the individuals, space delimited
 rule combine_chr_mpgl_onlyRetros:
     input:
         onlyRetros_chrpos=f"{data_dir}/allsamples_allsites_final_snps_subset_onlyRetros_chr_pos.txt",
