@@ -12,7 +12,10 @@ data_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/data"
 
 rule all:
     input:
-        noSRF2vcf = f"{data_dir}/allsamples_allsites_final_snps_subset_noSRF2s.vcf"
+        f"{data_dir}/allsamples_allsites_final_snps_subset_noSRF2s.vcf",
+        f"{data_dir}/allsamples_allsites_final_snps_subset_noSRF2s_split.mpgl",
+        f"{data_dir}/allsamples_allsites_final_snps_subset_onlyRetros_split.txt",
+        f"{data_dir}/allsamples_allsites_final_snps_subset_onlyRetros_split.mpgl"
 
 rule split_noSRF2_vcf:
     input: 
@@ -110,4 +113,48 @@ with open("{output.onlyRetros_mpgl}", "w") as output_file:
     for line in output_data:
         output_file.write(line + '\n')
 EOF
+        """
+
+rule chrpos_noSRF2:
+    input: 
+         noSRF2_vcf = f"{data_dir}/allsamples_allsites_final_snps_subset_noSRF2s.vcf"
+    output:
+         noSRF2_chrpos = f"{data_dir}/allsamples_allsites_final_snps_subset_noSRF2s_chr_pos.txt"
+    shell:
+        """
+        echo -e "CHROM\tPOS\t$(head -n 1 {input.noSRF2vcf}  | cut -f 1-2)" > {output.noSRF2_split}
+        grep -v '^#' {input.noSRF2_mgpl} | cut -f 1-2 >> {output.noSRF2_chrpos}
+        """
+
+rule chrpos_onlyRetros:
+    input: 
+        onlyRetros_vcf=f"{data_dir}/allsamples_allsites_final_snps_subset_onlyRetros.vcf"
+    output:
+        onlyRetros_chrpos=f"{data_dir}/allsamples_allsites_final_snps_subset_onlyRetros_chr_pos.txt"
+    shell:
+        """
+        echo -e "CHROM:POS\t$(head -n 1 {input.onlyRetros_vcf} | cut -f 1-2)" > {output.onlyRetros_chrpos}
+        grep -v '^#' {input.onlyRetros_mgpl} | cut -f 1-2 | awk -F '\t' '{{OFS=":"; print $1, $2}}' >> {output.onlyRetros_chrpos}
+        """
+
+rule combine_chr_mpgl_noSRF2:
+    input:
+        noSRF2_chrpos=f"{data_dir}/allsamples_allsites_final_snps_subset_noSRF2_chr_pos.txt",
+        noSRF2_mgpl="{data_dir}/allsamples_allsites_final_snps_subset_noSRF2_split.mpgl"
+    output:
+        final_file="{data_dir}/final_combined_output.txt"
+    shell:
+        """
+        paste -d '\t' {input.chrpos_file} {input.mpgl_file} > {output.final_file}
+        """
+
+rule combine_chr_mpgl_onlyRetros:
+    input:
+        chrpos_file="{data_dir}/allsamples_allsites_final_snps_subset_combined.txt",
+        mpgl_file="{data_dir}/allsamples_allsites_final_snps_subset_onlyRetros_split.mpgl"
+    output:
+        final_file="{data_dir}/final_combined_output.txt"
+    shell:
+        """
+        paste -d '\t' {input.chrpos_file} {input.mpgl_file} > {output.final_file}
         """
