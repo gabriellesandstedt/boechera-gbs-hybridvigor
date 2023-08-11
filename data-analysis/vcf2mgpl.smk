@@ -28,7 +28,7 @@ rule split_noSRF2_vcf:
          noSRF2_split = f"{data_dir}/allsamples_allsites_final_snps_subset_noSRF2s_split.txt"
     shell:
         """
-        echo -e "CHROM\tPOS\t$(head -n 1 {input.noSRF2vcf}  | cut -f 9-142)" > {output.noSRF2_split}
+        echo -e "CHROM\tPOS\t$(head -n 1 {input.noSRF2vcf}  | cut -f 10-143)" > {output.noSRF2_split}
         grep -v '^#' {input.noSRF2vcf} | cut -f 10-143 >> {output.noSRF2_split}
         """
 
@@ -103,7 +103,7 @@ rule split_onlyRetros_vcf:
         onlyRetros_split=f"{data_dir}/allsamples_allsites_final_snps_subset_onlyRetros_split.txt"
     shell:
         """
-        echo -e "CHROM\tPOS\t$(head -n 1 {input.onlyRetros_vcf}  | cut -f 9-121)" > {output.onlyRetros_split}
+        echo -e "CHROM\tPOS\t$(head -n 1 {input.onlyRetros_vcf}  | cut -f 10-122)" > {output.onlyRetros_split}
         grep -v '^#' {input.onlyRetros_vcf} | cut -f 10-122 >> {output.onlyRetros_split}
         """
 
