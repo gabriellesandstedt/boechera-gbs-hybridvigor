@@ -81,6 +81,9 @@ rule chrpos_noSRF2:
         grep -v '^#' {input.noSRF2_vcf} | cut -f 1-2 | awk -F '\t' '{{OFS=":"; print $1, $2}}' >> {output.noSRF2_chrpos}
         """
 
+# for the final mgpl file, I manually replaced row 1 from the output of this rule. 
+# first row has two columns (space delimited). col 1 | number of indiviuals, col 2| number of loci
+# second row are the individuals, space delimited
 rule combine_chr_mpgl_noSRF2:
     input:
         noSRF2_chrpos=f"{data_dir}/allsamples_allsites_final_snps_subset_noSRF2s_chr_pos.txt",
