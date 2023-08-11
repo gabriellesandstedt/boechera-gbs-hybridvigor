@@ -66,6 +66,29 @@ with open("{output.noSRF2_mpgl}", "w") as output_file:
 EOF
         """
 
+rule chrpos_noSRF2:
+    input: 
+        noSRF2_vcf=f"{data_dir}/allsamples_allsites_final_snps_subset_noSRF2s.vcf"
+    output:
+        noSRF2_chrpos=f"{data_dir}/allsamples_allsites_final_snps_subset_noSRF2s_chr_pos.txt"
+    shell:
+        """
+        echo -e "CHROM:POS\t$(head -n 1 {input.noSRF2_vcf} | cut -f 1-2)" > {output.noSRF2_chrpos}
+        grep -v '^#' {input.noSRF2_vcf} | cut -f 1-2 | awk -F '\t' '{{OFS=":"; print $1, $2}}' >> {output.noSRF2_chrpos}
+        """
+
+rule combine_chr_mpgl_noSRF2:
+    input:
+        noSRF2_chrpos=f"{data_dir}/allsamples_allsites_final_snps_subset_noSRF2s_chr_pos.txt",
+        noSRF2_mgpl=f"{data_dir}/allsamples_allsites_final_snps_subset_noSRF2s_split.mpgl"
+    output:
+        noSRF2_final_file=f"{data_dir}/noSRF2_final.mgpl"
+    shell:
+        """
+        paste -d ' ' {input.noSRF2_chrpos} {input.noSRF2_mgpl} > {output.noSRF2_final_file}
+        """
+
+
 rule split_onlyRetros_vcf:
     input: 
         onlyRetros_vcf=f"{data_dir}/allsamples_allsites_final_snps_subset_onlyRetros.vcf"
@@ -115,17 +138,6 @@ with open("{output.onlyRetros_mpgl}", "w") as output_file:
 EOF
         """
 
-rule chrpos_noSRF2:
-    input: 
-         noSRF2_vcf = f"{data_dir}/allsamples_allsites_final_snps_subset_noSRF2s.vcf"
-    output:
-         noSRF2_chrpos = f"{data_dir}/allsamples_allsites_final_snps_subset_noSRF2s_chr_pos.txt"
-    shell:
-        """
-        echo -e "CHROM\tPOS\t$(head -n 1 {input.noSRF2vcf}  | cut -f 1-2)" > {output.noSRF2_split}
-        grep -v '^#' {input.noSRF2_mgpl} | cut -f 1-2 >> {output.noSRF2_chrpos}
-        """
-
 rule chrpos_onlyRetros:
     input: 
         onlyRetros_vcf=f"{data_dir}/allsamples_allsites_final_snps_subset_onlyRetros.vcf"
@@ -134,27 +146,16 @@ rule chrpos_onlyRetros:
     shell:
         """
         echo -e "CHROM:POS\t$(head -n 1 {input.onlyRetros_vcf} | cut -f 1-2)" > {output.onlyRetros_chrpos}
-        grep -v '^#' {input.onlyRetros_mgpl} | cut -f 1-2 | awk -F '\t' '{{OFS=":"; print $1, $2}}' >> {output.onlyRetros_chrpos}
-        """
-
-rule combine_chr_mpgl_noSRF2:
-    input:
-        noSRF2_chrpos=f"{data_dir}/allsamples_allsites_final_snps_subset_noSRF2_chr_pos.txt",
-        noSRF2_mgpl="{data_dir}/allsamples_allsites_final_snps_subset_noSRF2_split.mpgl"
-    output:
-        final_file="{data_dir}/final_combined_output.txt"
-    shell:
-        """
-        paste -d '\t' {input.chrpos_file} {input.mpgl_file} > {output.final_file}
+        grep -v '^#' {input.onlyRetros_mvcf} | cut -f 1-2 | awk -F '\t' '{{OFS=":"; print $1, $2}}' >> {output.onlyRetros_chrpos}
         """
 
 rule combine_chr_mpgl_onlyRetros:
     input:
-        chrpos_file="{data_dir}/allsamples_allsites_final_snps_subset_combined.txt",
-        mpgl_file="{data_dir}/allsamples_allsites_final_snps_subset_onlyRetros_split.mpgl"
+        onlyRetros_chrpos=f"{data_dir}/allsamples_allsites_final_snps_subset_onlyRetros_chr_pos.txt",
+        onlyRetros_mgpl=f"{data_dir}/allsamples_allsites_final_snps_subset_onlyRetros_split.mpgl"
     output:
-        final_file="{data_dir}/final_combined_output.txt"
+        onlyRetros_final_file=f"{data_dir}/onlyRetros_final.mgpl"
     shell:
         """
-        paste -d '\t' {input.chrpos_file} {input.mpgl_file} > {output.final_file}
+        paste -d ' ' {input.onlyRetros_chrpos} {input.onlyRetros_mgpl} > {output.onlyRetros_final_file}
         """
