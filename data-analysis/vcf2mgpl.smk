@@ -23,9 +23,9 @@ rule all:
 
 rule split_noSRF2_vcf:
     input: 
-         noSRF2vcf = f"{data_dir}/allsamples_allsites_final_snps_subset_noSRF2s.vcf"
+         noSRF2vcf = f"{data_dir}/allsamples_allsites_final_snps_subset_noRhybrids.vcf"
     output:
-         noSRF2_split = f"{data_dir}/allsamples_allsites_final_snps_subset_noSRF2s_split.txt"
+         noSRF2_split = f"{data_dir}/allsamples_allsites_final_snps_subset_noRhybrids_split.txt"
     shell:
         """
         echo -e "CHROM\tPOS\t$(head -n 1 {input.noSRF2vcf}  | cut -f 10-143)" > {output.noSRF2_split}
@@ -34,9 +34,9 @@ rule split_noSRF2_vcf:
 
 rule noSRF2_vcf2mgpl:
     input:
-        noSRF2_split = f"{data_dir}/allsamples_allsites_final_snps_subset_noSRF2s_split.txt"
+        noSRF2_split = f"{data_dir}/allsamples_allsites_final_snps_subset_noRhybrids_split.txt"
     output:
-        noSRF2_mpgl = f"{data_dir}/allsamples_allsites_final_snps_subset_noSRF2s_split.mpgl"
+        noSRF2_mpgl = f"{data_dir}/allsamples_allsites_final_snps_subset_noRhybrids_split.mpgl"
     shell:
         r"""
         python - <<'EOF'
@@ -72,9 +72,9 @@ EOF
 
 rule chrpos_noSRF2:
     input: 
-        noSRF2_vcf=f"{data_dir}/allsamples_allsites_final_snps_subset_noSRF2s.vcf"
+        noSRF2_vcf=f"{data_dir}/allsamples_allsites_final_snps_subset_noRhybrids.vcf"
     output:
-        noSRF2_chrpos=f"{data_dir}/allsamples_allsites_final_snps_subset_noSRF2s_chr_pos.txt"
+        noSRF2_chrpos=f"{data_dir}/allsamples_allsites_final_snps_subset_noRhybrids_chr_pos.txt"
     shell:
         """
         echo -e "CHROM:POS\t$(head -n 1 {input.noSRF2_vcf} | cut -f 1-2)" > {output.noSRF2_chrpos}
@@ -86,10 +86,10 @@ rule chrpos_noSRF2:
 # second row are the individuals, space delimited
 rule combine_chr_mpgl_noSRF2:
     input:
-        noSRF2_chrpos=f"{data_dir}/allsamples_allsites_final_snps_subset_noSRF2s_chr_pos.txt",
-        noSRF2_mgpl=f"{data_dir}/allsamples_allsites_final_snps_subset_noSRF2s_split.mpgl"
+        noSRF2_chrpos=f"{data_dir}/allsamples_allsites_final_snps_subset_noRhybrids_chr_pos.txt",
+        noSRF2_mgpl=f"{data_dir}/allsamples_allsites_final_snps_subset_noRhybrids_split.mpgl"
     output:
-        noSRF2_final_file=f"{data_dir}/noSRF2_final.mgpl"
+        noSRF2_final_file=f"{data_dir}/noRhybrids_final.mgpl"
     shell:
         """
         paste -d ' ' {input.noSRF2_chrpos} {input.noSRF2_mgpl} > {output.noSRF2_final_file}
