@@ -20,10 +20,12 @@ ref_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS/ref_genomes/data"
 # txt files are available in /boechera-gbs-hybridvigor/helper-files
 df = pd.read_csv(f"{data_dir}/config2.txt", sep="\t")
 df2 = pd.read_csv(f"{data_dir}/config3.txt", sep="\t")
+df3 = pd.read_csv(f"{data_dir}/config4.txt", sep="\t")
 
 # define sample map for all samples (sample_map1) and matrix (sample_map2), this includes two columns: column 1 with sample name and column 2 with path to samples
 sample_map1 = "sample_map1.txt"
 sample_map2 = "sample_map2.txt"
+sample_map3 = "sample_map3.txt"
 
 # define interval list with list of chromosomes
 interval_list = "interval.list"
