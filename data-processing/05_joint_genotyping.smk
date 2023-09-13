@@ -101,7 +101,6 @@ rule joint_genotype_allsamples:
         boech_output=f"{data_dir}/boech_gbs_allsamples.vcf"
     params:
         genomicsdb="gendb://DB_allsamples"
-
     shell:
         """
         module load gatk/4.1
