@@ -24,8 +24,6 @@ df3 = pd.read_csv(f"{data_dir}/config4.txt", sep="\t")
 
 # define sample map for all samples (sample_map1) and matrix (sample_map2), this includes two columns: column 1 with sample name and column 2 with path to samples
 sample_map1 = "sample_map1.txt"
-sample_map2 = "sample_map2.txt"
-sample_map3 = "sample_map3.txt"
 
 # define interval list with list of chromosomes
 interval_list = "interval.list"
@@ -40,10 +38,7 @@ rule all:
         expand(f"{data_dir}/{{sample}}_sorted_RG.bam", sample=df['Sample']),
         expand(f"{data_dir}/{{sample}}.g.vcf", sample=df['Sample']),
         "/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/scripts/DB_allsamples",
-        "/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/scripts/DB_matrix",
         expand(f"{data_dir}/boech_gbs_allsamples.vcf"),
-        expand(f"{data_dir}/boech_gbs_matrix.vcf"),
-        expand(f"{data_dir}/boech_gbs_retro_allsites.vcf")
 
 # define rule to index reference with GATK 
 rule index_reference:
@@ -96,24 +91,6 @@ rule genomicsdb_import_allsamples:
             --sample-name-map {input.map_allsamples} \
             --intervals {input.interval_list}
         """
-# define rule to combine gvcfs for retro samples used in the genetic matrix in a database
-rule genomicsdb_import_matrix:
-    input:
-        gvcf=expand(f"{data_dir}/{{sample}}.g.vcf", sample=df2['Sample']),
-        interval_list=f"{data_dir}/{interval_list}",
-        map_matrix=f"{data_dir}/{sample_map2}"
-    output:
-        database=directory("/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/scripts/DB_matrix")
-    shell:
-        """
-        module load gatk/4.1
-        gatk GenomicsDBImport \
-            --genomicsdb-workspace-path {output.database} \
-            --batch-size 42 \
-            --reader-threads 6 \
-            --sample-name-map {input.map_matrix} \
-            --intervals {input.interval_list}
-        """
 
 # define rule to joint genotype for all samples at all sites
 rule joint_genotype_allsamples:
@@ -125,47 +102,6 @@ rule joint_genotype_allsamples:
     params:
         genomicsdb="gendb://DB_allsamples"
 
-    shell:
-        """
-        module load gatk/4.1
-        gatk GenotypeGVCFs \
-            -R {input.ref} \
-            -V {params.genomicsdb} \
-            -L {input.intervals} \
-            --allow-old-rms-mapping-quality-annotation-data \
-            --all-sites \
-            -O {output.boech_output}
-        """
-
-# define rule to joint genotype for samples used in the genetic matrix       
-rule joint_genotype_matrix:
-    input:
-        ref=f"{ref_dir}/{ref}",
-        intervals=f"{data_dir}/{interval_list}"
-    output:
-        boech_output=f"{data_dir}/boech_gbs_matrix.vcf"
-    params:
-        genomicsdb="gendb://DB_matrix"
-    shell:
-        """
-        module load gatk/4.1
-        gatk GenotypeGVCFs \
-            -R {input.ref} \
-            -V {params.genomicsdb} \
-            -L {input.intervals} \
-            --allow-old-rms-mapping-quality-annotation-data \
-            -O {output.boech_output}
-        """
-
-# define rule to joint genotype for samples used in the genetic matrix at all sites (including invariants)     
-rule joint_genotype_retro_allsites:
-    input:
-        ref=f"{ref_dir}/{ref}",
-        intervals=f"{data_dir}/{interval_list}"
-    output:
-        boech_output=f"{data_dir}/boech_gbs_retro_allsites.vcf"
-    params:
-        genomicsdb="gendb://DB_matrix"
     shell:
         """
         module load gatk/4.1
