@@ -138,7 +138,7 @@ rule filter_variants:
             -V {input.biallelic_vcf} \
             --filter-expression "QD < 2.0" --filter-name "QD2" \
             --filter-expression "QUAL < 30.0" --filter-name "QUAL30" \
-            --filter-expression "SOR > 3.0" --filter-name "SOR3" \
+            --filter-expression "SOR > 4.0" --filter-name "SOR4" \
             --filter-expression "FS > 60.0" --filter-name "FS60" \
             --filter-expression "MQ < 40.0" --filter-name "MQ40" \
             --filter-expression "MQRankSum < -12.5" --filter-name "MQRankSum-12.5" \
@@ -300,44 +300,43 @@ rule filter_heterozygous_genotypes:
     input:
         rscript=f"{scripts_dir}/filter_heterozygous_genotypes.R"
     output:
-        f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets.vcf"
+        f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filterPASSED_DPfilterNoCall.vcf.gz"
     shell:
         """
         module load R
         Rscript {input.rscript}
         """
 
-# filter minor allele count
-# mac 8/156 samples, >0.05% 
-# no. of biallelic snps: 5316
-rule filter_minor_allele_count:
+# ensure no indels and biallelic snps...again
+rule final_allsamples_filter:
     input:
-        filtered_hets_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets.vcf"
+        filtered_hets_gzvcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filterPASSED_DPfilterNoCall_hets.vcf.gz",
+        filtered_hets_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filterPASSED_DPfilterNoCall_hets.vcf"
     output:
-        filtered_mac_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf"
+        filtered_snp_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets.vcf"
     shell:
         """
+        gunzip {input.filtered_hets_gzvcf}
         module load vcftools/0.1.15-6
         vcftools \
             --vcf {input.filtered_hets_vcf} \
             --remove-indels \
             --min-alleles 2 \
             --max-alleles 2 \
-            --mac 8 \
             --recode \
             --recode-INFO-all \
-            --out {output.filtered_mac_vcf}
+            --out {output.filtered_snp_vcf}
         """
 
 # define rule to bgzip vcf files
 rule vcf_to_gzvcf:
     input:
-        var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf",
+        var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets.vcf.recode.vcf",
         inv_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_filterPASSED_DPfilterNoCall.vcf"
     output:
-        gz_var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf.gz",
+        gz_var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets.vcf.recode.vcf.gz",
         gz_invar_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_filterPASSED_DPfilterNoCall.vcf.gz",
-        tabix_var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf.gz.tbi",
+        tabix_var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets.vcf.recode.vcf.gz.tbi",
         tabix_invar_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_filterPASSED_DPfilterNoCall.vcf.gz.tbi"
     shell:
         """
@@ -350,7 +349,7 @@ rule vcf_to_gzvcf:
 
 rule combine_vcfs:
     input:
-       gz_var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets_mac.vcf.recode.vcf.gz",
+       gz_var_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filter_DP_hets.vcf.recode.vcf.gz",
        gz_invar_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_filterPASSED_DPfilterNoCall.vcf.gz"
     output:
        final_vcf=f"{data_dir}/boech_gbs_allsamples_combined_final.vcf.gz",
