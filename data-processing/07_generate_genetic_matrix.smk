@@ -27,7 +27,7 @@ rule genetic_matrix_samples:
     output:
         gen_matrix_samples_vcf=f"{data_dir}/boech_gbs_final_genetic_matrix_samples.vcf"
     params:
-        samples_to_include="pa1_pool,pa10_pool,pa2_pool,pa3_pool,pa4_pool,pa5_pool,pa6_pool,pa7_pool,pa8_pool,pa9_pool,pw1_pool,pw10_pool,pw11_pool,pw2_pool,pw3_pool,pw4_pool,pw5_pool,pw6b_pool,pw7_pool,pw8b_pool,pw9_pool,am1_1,am10_1,am11_1,am12_1,am13_1,am14_1,am15_1,am2_1,am3_1,am4_1,am5_1,am6_1,am7_1,am8_1,am9_1,wi1_1,wi10_1,wi2_1,wi4_1,wi7_1,wi8_1,wi9_1"
+        samples_to_include="pa1_pool,pa10_pool,pa2_pool,pa3_pool,pa4_pool,pa5_pool,pa6_pool,pa7_pool,pa8_pool,pa9_pool,pw1_pool,pw10_pool,pw11_pool,pw2_pool,pw3_pool,pw4_pool,pw5_pool,pw6b_pool,pw7_pool,pw8b_pool,pw9_pool,am1_1,am10_1,am11_1,am12_1,am13_1,am14_1,am15_1,am2_1,am3_1,am4_1,am5_1,am6_1,am7_1,am8_1,am9_1,wi1_1,wi2_1,wi4_1,wi7_1,wi8_1,wi9_1"
     shell:
         """
         module load bcftools/1.16
