@@ -3,7 +3,7 @@
 ################################################################################
 ################################################################################
 ## AUTHOR: Gabrielle Sandstedt
-## command to run snakemake script: snakemake --rerun-incomplete --latency-wait 60 --cores 4 -s 06_filter_allsites_allsamples_vcf.smk
+## command to run snakemake script: snakemake --rerun-incomplete --latency-wait 60 --cores 4 -s 07_estimate_dxy_retro_parents.smk
 ################################################################################
 ################################################################################
 # define directories
