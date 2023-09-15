@@ -15,10 +15,13 @@ ref_genome = "GCA_018361405.1_NTU_Bstr_LTM_2.2_genomic.fa"
 # define rule all statement
 rule all:
     input:
-        f"{data_dir}/boech_gbs_final_genetic_matrix_samples.vcf",
-        f"{data_dir}/boech_gbs_final_genetic_matrix_samples_SNPs.vcf",
-        f"{data_dir}/boech_gbs_final_genetic_matrix_samples_SNPs_filtered.vcf.gz",
-        f"{data_dir}/boech_gbs_final_genetic_matrix_samples_SNPs_filtered.vcf.rel"
+        f"{data_dir}/boech_gbs_final_retro_parents_samples.vcf",
+        f"{data_dir}/boech_gbs_retro_parents_invariant.vcf",
+        f"{data_dir}/boech_gbs_retro_parents_samples_SNPs.vcf",
+        f"{data_dir}/boech_gbs_retro_parents_samples_SNPs_filtered.vcf.gz,
+        f"{data_dir}/boech_gbs_retro_parents_invariant.vcf.gz",
+        f"{data_dir}/boech_gbs_retro_parents_final.vcf.gz",
+        f"{data_dir}/pixy_stats.txt"
 
 # subset samples for dxy among retrofracta parents
 rule retro_parent_dxy_samples:
@@ -125,3 +128,25 @@ rule combine_vcfs:
         bcftools concat {input.gz_var_vcf} {input.gz_invar_vcf} -a -Oz -o {output.final_vcf}
         tabix -p vcf {output.final_vcf}
         """   
+
+
+rule pixy_stats:
+    input:
+        vcf=f"{data_dir}/boech_gbs_retro_parents_final.vcf.gz",
+        pop_file=f"{data_dir}/retro_pop.txt"
+    output:
+        pixy_output=f"{data_dir}/pixy_stats.txt"
+    params:
+        window_size=1000000,
+        n_cores=4
+    shell:
+        """
+        ml pixy/1.2.3
+        ml htslib/1.16
+        pixy --stats pi fst dxy \
+        --vcf {input.vcf} \
+        --populations {input.pop_file} \
+        --window_size {params.window_size} \
+        --n_cores {params.n_cores} \
+        > {output.pixy_output}
+        """
