@@ -18,7 +18,7 @@ rule all:
         f"{data_dir}/boech_gbs_final_retro_parents_samples.vcf",
         f"{data_dir}/boech_gbs_retro_parents_invariant.vcf",
         f"{data_dir}/boech_gbs_retro_parents_samples_SNPs.vcf",
-        f"{data_dir}/boech_gbs_retro_parents_samples_SNPs_filtered.vcf.gz,
+        f"{data_dir}/boech_gbs_retro_parents_samples_SNPs_filtered.vcf.gz",
         f"{data_dir}/boech_gbs_retro_parents_invariant.vcf.gz",
         f"{data_dir}/boech_gbs_retro_parents_final.vcf.gz",
         f"{data_dir}/pixy_stats.txt"
