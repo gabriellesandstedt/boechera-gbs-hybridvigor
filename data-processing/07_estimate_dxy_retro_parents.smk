@@ -74,7 +74,7 @@ rule select_biallelic_snps:
         """
         
 # filter SNPs to remove rare alleles
-# 21 samples, mac 2/21 samples >0.05% 
+# 19 samples, mac 2/21 samples >0.05% 
 rule filter_minor_allele_count:
     input:
         filtered_hets_vcf=f"{data_dir}/boech_gbs_retro_parents_samples_SNPs.vcf"
@@ -90,7 +90,7 @@ rule filter_minor_allele_count:
             --remove-indels \
             --min-alleles 2 \
             --max-alleles 2 \
-            --mac 2 \
+            --mac 1 \
             --recode \
             --recode-INFO-all \
             --out {output.filtered_mac_vcf_prefix}
