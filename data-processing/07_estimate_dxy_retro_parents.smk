@@ -77,7 +77,7 @@ rule select_biallelic_snps:
 # 21 samples, mac 2/21 samples >0.05% 
 rule filter_minor_allele_count:
     input:
-        filtered_hets_vcf=f"{data_dir}/boech_gbs_retro_parents_samples_SNPs.vcf"
+        snps_vcf=f"{data_dir}/boech_gbs_retro_parents_samples_SNPs.vcf"
     output:
         filtered_mac_vcf_prefix=f"{data_dir}/boech_gbs_retro_parents_samples_SNPs_filtered.vcf",
         filtered_mac_vcf=f"{data_dir}/boech_gbs_retro_parents_samples_SNPs_filtered.vcf.gz"
@@ -86,7 +86,7 @@ rule filter_minor_allele_count:
         module load vcftools/0.1.15-6
         module load htslib/1.18
         vcftools \
-            --vcf {input.filtered_hets_vcf} \
+            --vcf {input.snps_vcf} \
             --remove-indels \
             --min-alleles 2 \
             --max-alleles 2 \
