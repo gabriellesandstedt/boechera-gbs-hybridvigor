@@ -115,6 +115,32 @@ with open("{output.split_mgpl}", "w") as output_file:
 EOF
         """
 
+# extract chromosome and position info 
+rule chrpos_retro_str:
+    input: 
+        retro_str_vcf=f"{data_dir}/boech_gbs_retro_str_entropy_SNPs_filtered.vcf.recode.vcf"
+    output:
+        retro_str_chrpos=f"{data_dir}/boech_gbs_retro_str_entropy_SNPs_filtered_chr_pos.txt"
+    shell:
+        """
+        echo -e "CHROM:POS\t$(head -n 1 {input.retro_str_vcf} | cut -f 1-2)" > {output.retro_str_chrpos}
+        grep -v '^#' {input.retro_str_vcf} | cut -f 1-2 | awk -F '\t' '{{OFS=":"; print $1, $2}}' >> {output.retro_str_chrpos}
+        """
+
+# for the final mgpl file, I manually replaced row 1 from the output of this rule. 
+# first row has two columns (space delimited). col 1 | number of indiviuals, col 2| number of loci
+# second row are the individuals, space delimited
+rule combine_chr_mpgl_retro_str:
+    input:
+        retro_str_chrpos=f"{data_dir}/boech_gbs_retro_str_entropy_SNPs_filtered_chr_pos.txt",
+        mgpl=f"{data_dir}/boech_gbs_retro_str_entropy_SNPs_filtered.mgpl"
+    output:
+        final_mgpl=f"{data_dir}/boech_gbs_retro_str_entropy_final.mgpl"
+    shell:
+        """
+        paste -d ' ' {input.retro_str_chrpos} {input.mgpl} > {output.final_mgpl}
+        """
+
 # define rule to subset only retro - retro parents and hybrids 
 rule retro_retro_hybrids:
     input:
@@ -216,4 +242,30 @@ with open("{output.split_mgpl}", "w") as output_file:
     for line in output_data:
         output_file.write(line + '\n')
 EOF
+        """
+
+# extract chromosome and position info 
+rule chrpos_retro_retro:
+    input: 
+        retro_vcf=f"{data_dir}/boech_gbs_retro_retro_entropy_SNPs_filtered.vcf.recode.vcf"
+    output:
+        retro_chrpos=f"{data_dir}/boech_gbs_retro_retro_entropy_SNPs_filtered_chr_pos.txt"
+    shell:
+        """
+        echo -e "CHROM:POS\t$(head -n 1 {input.retro_vcf} | cut -f 1-2)" > {output.retro_chrpos}
+        grep -v '^#' {input.retro_vcf} | cut -f 1-2 | awk -F '\t' '{{OFS=":"; print $1, $2}}' >> {output.retro_chrpos}
+        """
+
+# for the final mgpl file, I manually replaced row 1 from the output of this rule. 
+# first row has two columns (space delimited). col 1 | number of indiviuals, col 2| number of loci
+# second row are the individuals, space delimited
+rule combine_chr_mpgl_retro_retro:
+    input:
+        retro_chrpos=f"{data_dir}/boech_gbs_retro_retro_entropy_SNPs_filtered_chr_pos.txt",
+        mgpl=f"{data_dir}/boech_gbs_retro_retro_entropy_SNPs_filtered.mgpl"
+    output:
+        final_mgpl=f"{data_dir}/boech_gbs_retro_retro_entropy_final.mgpl"
+    shell:
+        """
+        paste -d ' ' {input.retro_chrpos} {input.mgpl} > {output.final_mgpl}
         """
