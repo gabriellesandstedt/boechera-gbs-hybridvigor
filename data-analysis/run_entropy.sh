@@ -18,7 +18,11 @@ entropy -i boech_gbs_retro_retro_entropy_final.mgpl -m 1 -n 2 -k 2 -q retro_retr
 entropy -i boech_gbs_retro_retro_entropy_final.mgpl -m 1 -n 2 -k 2 -q retro_retro_k2.txt -Q 1 -l 15000 -b 5000 -t 5 -s 30 -o mcmc_retro_retro_m1n2k2Q1l15000b5000t5s30_qfilek2_chain3.hdf5
 
 
-estpost.entropy -p q -s 4mcmc_retro_stricta_m1n2k2Q1l15000b5000t5s30_qfilek2_chain1.hdf5 mcmc_retro_stricta_m1n2k2Q1l15000b5000t5s30_qfilek2_chain2.hdf5 mcmc_retro_stricta_m1n2k2Q1l15000b5000t5s30_qfilek2_chain1.hdf5 -o ent_stricta_retro_convergence.txt
+estpost.entropy -p q -s 4 mcmc_retro_stricta_m1n2k2Q1l15000b5000t5s30_qfilek2_chain1.hdf5 mcmc_retro_stricta_m1n2k2Q1l15000b5000t5s30_qfilek2_chain2.hdf5 mcmc_retro_stricta_m1n2k2Q1l15000b5000t5s30_qfilek2_chain1.hdf5 -o ent_stricta_retro_convergence.txt
+estpost.entropy -p q -s 0 mcmc_retro_stricta_m1n2k2Q1l15000b5000t5s30_qfilek2_chain1.hdf5 mcmc_retro_stricta_m1n2k2Q1l15000b5000t5s30_qfilek2_chain2.hdf5 mcmc_retro_stricta_m1n2k2Q1l15000b5000t5s30_qfilek2_chain3.hdf5 -o ent_stricta_retro_admix_prop.txt
+estpost.entropy -p Q -s 0 mcmc_retro_stricta_m1n2k2Q1l15000b5000t5s30_qfilek2_chain1.hdf5 mcmc_retro_stricta_m1n2k2Q1l15000b5000t5s30_qfilek2_chain2.hdf5 mcmc_retro_stricta_m1n2k2Q1l15000b5000t5s30_qfilek2_chain3.hdf5 -o ent_stricta_retro_inter_anc.txt
+estpost.entropy -p q -s 0 mcmc_retro_retro_m1n2k2Q1l15000b5000t5s30_qfilek2_chain1.hdf5 mcmc_retro_retro_m1n2k2Q1l15000b5000t5s30_qfilek2_chain2.hdf5 mcmc_retro_retro_m1n2k2Q1l15000b5000t5s30_qfilek2_chain3.hdf5 -o ent_retro_retro_admix_prop.txt
+estpost.entropy -p Q -s 0 mcmc_retro_retro_m1n2k2Q1l15000b5000t5s30_qfilek2_chain1.hdf5 mcmc_retro_retro_m1n2k2Q1l15000b5000t5s30_qfilek2_chain2.hdf5 mcmc_retro_retro_m1n2k2Q1l15000b5000t5s30_qfilek2_chain3.hdf5 -o ent_retro_retro_inter_anc.txt
 
 
 rule all:
