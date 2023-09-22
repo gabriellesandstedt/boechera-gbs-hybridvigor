@@ -115,3 +115,24 @@ rule combine_vcfs:
         bcftools concat {input.gz_var_vcf} {input.gz_invar_vcf} -a -Oz -o {output.final_vcf}
         tabix -p vcf {output.final_vcf}
         """  
+
+rule pixy_stats:
+    input:
+        vcf=f"{data_dir}/boech_gbs_allsamples_final.vcf.gz",
+        pop_file=f"{data_dir}/allsamples_pop.txt"
+    output:
+        pixy_output=f"{data_dir}/pixy_stats.txt"
+    params:
+        window_size=1000000,
+        n_cores=4
+    shell:
+        """
+        ml pixy/1.2.3
+        ml htslib/1.16
+        pixy --stats pi fst dxy \
+        --vcf {input.vcf} \
+        --populations {input.pop_file} \
+        --window_size {params.window_size} \
+        --n_cores {params.n_cores} \
+        > {output.pixy_output}
+        """
