@@ -26,8 +26,6 @@ rule sabre_demultiplex:
         B1 = f"{raw_dir}/barcodes_C6NP3ANXX_7",
         FQ2 = f"{raw_dir}/C6NP3ANXX_8.fastq.gz",
         B2 = f"{raw_dir}/barcodes_C6NP3ANXX_8",
-        raw_dir = raw_dir,
-        data_dir = data_dir
     output:
         unknown_barcodes1 = expand(f"{data_dir}/unknown_barcodes_C6NP3ANXX_7"),
         unknown_barcodes2 = expand(f"{data_dir}/unknown_barcodes_C6NP3ANXX_8")
