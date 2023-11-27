@@ -8,8 +8,8 @@
 ################################################################################
 ################################################################################
 # assign directories
-raw_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/raw_data"
-data_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/data"
+raw_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_DEC23/data"
+data_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_DEC23/data1"
 
 # Define rule all output files
 rule all:
