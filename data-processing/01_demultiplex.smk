@@ -18,6 +18,7 @@ rule all:
         expand(f"{data_dir}/unknown_barcodes_C6NP3ANXX_8")
 
 # Define rule for demultiplexing with SABRE
+# note that the fastqs downloaded from HD are labeled *_fastq* vs *.fastq*
 # Sabre v 1.00 : https://github.com/najoshi/sabre
 rule sabre_demultiplex:
     input:
