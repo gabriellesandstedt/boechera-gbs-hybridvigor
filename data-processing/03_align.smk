@@ -1,4 +1,4 @@
-################################################################################
+23################################################################################
 ## Index reference genome, align trimmed fastq files, remove reads with a map quality score < 29
 ################################################################################
 ################################################################################
@@ -11,8 +11,8 @@ import pandas as pd
 from snakemake.io import expand
 
 # Define the paths to data files
-data_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/data"
-ref_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS/ref_genomes/data"
+data_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_DEC23/data"
+ref_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_DEC23/ref_genome/data"
 
 # reference genome -- B. stricta v 2.2 : https://ftp.ncbi.nlm.nih.gov/genomes/genbank/plant/Boechera_stricta/latest_assembly_versions/GCA_018361405.1_NTU_Bstr_LTM_2.2/
 ref = "GCA_018361405.1_NTU_Bstr_LTM_2.2_genomic.fa"
