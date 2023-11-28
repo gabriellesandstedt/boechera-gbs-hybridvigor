@@ -9,13 +9,12 @@
 ################################################################################
 # assign directories
 raw_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_DEC23/data"
-data_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_DEC23/data1"
 
 # Define rule all output files
 rule all:
     input:
-        expand(f"{data_dir}/unknown_barcodes_C6NP3ANXX_7"),
-        expand(f"{data_dir}/unknown_barcodes_C6NP3ANXX_8")
+        expand(f"{raw_dir}/unknown_barcodes_C6NP3ANXX_7"),
+        expand(f"{raw_dir}/unknown_barcodes_C6NP3ANXX_8")
 
 # Define rule for demultiplexing with SABRE
 # note that the fastqs downloaded from HD are labeled *_fastq* vs *.fastq*
@@ -27,8 +26,8 @@ rule sabre_demultiplex:
         FQ2 = f"{raw_dir}/C6NP3ANXX_8.fastq.gz",
         B2 = f"{raw_dir}/barcodes_C6NP3ANXX_8",
     output:
-        unknown_barcodes1 = expand(f"{data_dir}/unknown_barcodes_C6NP3ANXX_7"),
-        unknown_barcodes2 = expand(f"{data_dir}/unknown_barcodes_C6NP3ANXX_8")
+        unknown_barcodes1 = expand(f"{raw_dir}/unknown_barcodes_C6NP3ANXX_7"),
+        unknown_barcodes2 = expand(f"{raw_dir}/unknown_barcodes_C6NP3ANXX_8")
     shell:
         """
         echo -e "\n["$(date)"]\n demultiplex fastq files ...\n"
