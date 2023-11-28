@@ -11,8 +11,8 @@ import pandas as pd
 from snakemake.io import expand
 
 # Define the paths to the raw data and the output directories
-data_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_smk/data"
-scripts_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_smk/scripts"
+data_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_DEC23/data"
+scripts_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_DEC23/scripts"
 qc1_dir = f"{data_dir}/FASTQC1"
 qc2_dir = f"{data_dir}/FASTQC2"
 log_dir = f"{data_dir}/logs"
