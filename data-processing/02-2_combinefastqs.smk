@@ -10,8 +10,8 @@ import pandas as pd
 from snakemake.io import expand
 
 # Define the paths to the raw data and the output directories
-data_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/data"
-cut_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_smk/data"
+data_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_DEC23/data"
+cut_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_DEC23/data"
 
 # Read the sample and adapter information from the config file into a pandas DataFrame
 # config_retro.txt has two columns (col 1| Array ID, col 2| Sample name without suffix (BrA, BrB))
