@@ -12,8 +12,8 @@ from snakemake.io import directory
 from snakemake.io import expand
 
 # Define the paths to data files
-data_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/data"
-ref_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS/ref_genomes/data"
+data_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_DEC23/data"
+ref_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_DEC23/ref_genome"
 
 # Read the sample information from the config file into a pandas DataFrame
 # config2.txt has two columns (col 1| Array ID, col 2| Sample name)
@@ -35,10 +35,11 @@ rule all:
         expand(f"{ref_dir}/{ref}.dict"),
         expand(f"{data_dir}/{{sample}}_sorted_RG.bam", sample=df['Sample']),
         expand(f"{data_dir}/{{sample}}.g.vcf", sample=df['Sample']),
-        "/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/scripts/DB_allsamples",
+        "/scratch/general/nfs1/u6048240/BOECHERA/GBS_DEC23/data/DB_allsamples",
         expand(f"{data_dir}/boech_gbs_allsamples.vcf"),
 
 # define rule to index reference with GATK 
+# is there an fai file for the reference? if not, need to run : samtools faidx ref.fasta
 rule index_reference:
     input:
         ref = f"{ref_dir}/{ref}"
@@ -48,8 +49,8 @@ rule index_reference:
         """
         module load gatk/4.1
         gatk CreateSequenceDictionary \
-            -R {input.ref} \
-            -O {output.index}
+            -R GCA_018361405.1_NTU_Bstr_LTM_2.2_genomic.fa \
+            -O GCA_018361405.1_NTU_Bstr_LTM_2.2_genomic.dict
         """
 
 # define rule to call potential variants for each sample
@@ -78,7 +79,7 @@ rule genomicsdb_import_allsamples:
         interval_list=f"{data_dir}/{interval_list}",
         map_allsamples=f"{data_dir}/{sample_map1}"
     output:
-        database=directory("/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/scripts/DB_allsamples")
+        database=directory("/scratch/general/nfs1/u6048240/BOECHERA/GBS_DEC23/data/DB_allsamples")
     shell:
         """
         module load gatk/4.1
