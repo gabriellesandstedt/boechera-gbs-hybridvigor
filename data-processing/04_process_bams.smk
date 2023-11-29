@@ -11,7 +11,7 @@ import pandas as pd
 from snakemake.io import expand
 
 # Define the paths to data files
-data_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/data"
+data_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_DEC23/data"
 
 # Read the sample information from the config file into a pandas DataFrame
 # config2.txt has two columns (col 1| Array ID, col 2| Sample name)
