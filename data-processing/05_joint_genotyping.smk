@@ -36,7 +36,7 @@ rule all:
         expand(f"{data_dir}/{{sample}}_sorted_RG.bam", sample=df['Sample']),
         expand(f"{data_dir}/{{sample}}.g.vcf", sample=df['Sample']),
         "/scratch/general/nfs1/u6048240/BOECHERA/GBS_DEC23/data/DB_allsamples",
-        expand(f"{data_dir}/boech_gbs_allsamples.vcf"),
+        expand(f"{data_dir}/boech_gbs_allsamples.vcf")
 
 # define rule to index reference with GATK 
 # is there an fai file for the reference? if not, need to run : samtools faidx ref.fasta
