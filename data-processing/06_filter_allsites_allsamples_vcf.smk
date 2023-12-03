@@ -9,7 +9,7 @@
 ################################################################################
 # define directories
 data_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_DEC23/data"
-ref_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_DEC23/ref_genome/data"
+ref_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_DEC23/ref_genome"
 
 # define the reference genome filename
 ref_genome = "GCA_018361405.1_NTU_Bstr_LTM_2.2_genomic.fa"
