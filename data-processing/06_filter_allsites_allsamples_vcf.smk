@@ -8,9 +8,8 @@
 ################################################################################
 ################################################################################
 # define directories
-data_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/data"
-scripts_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/scripts"
-ref_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS/ref_genomes/data"
+data_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_DEC23/data"
+ref_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_DEC23/ref_genome/data"
 
 # define the reference genome filename
 ref_genome = "GCA_018361405.1_NTU_Bstr_LTM_2.2_genomic.fa"
@@ -86,7 +85,7 @@ rule variant_table:
     input:
         ref=f"{ref_dir}/{ref_genome}",
         biallelic_vcf=f"{data_dir}/boech_gbs_allsamples_biallelic_snps.vcf",
-        rscript=f"{scripts_dir}/filtering_diagnostics.R"
+        rscript=f"{data_dir}/filtering_diagnostics.R"
     output:
         table=f"{data_dir}/boech_gbs_allsamples_variant.table"
     shell:
@@ -107,7 +106,7 @@ rule invariant_table:
     input:
         ref=f"{ref_dir}/{ref_genome}",
         biallelic_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_geno_called.vcf",
-        rscript=f"{scripts_dir}/filtering_diagnostics.R"
+        rscript=f"{data_dir}/filtering_diagnostics.R"
     output:
         table=f"{data_dir}/boech_gbs_allsamples_invariant.table"
     shell:
@@ -213,7 +212,7 @@ rule table_for_depth:
 rule filter_table_for_called_genotypes:
     input:
         dp_table="boech_gbs_allsamples.DP.table"
-        rscript=f"{scripts_dir}/filtering_diagnostics_DP.R"
+        rscript=f"{data_dir}/filtering_diagnostics_DP.R"
     output:
         filtered_dp_table="filtered_boech_gbs_allsamples.DP.table"
     shell:
@@ -298,7 +297,7 @@ rule select_invariants:
 # input file for R script: boech_gbs_allsamples_biallelic_snps_filterPASSED_DPfilterNoCall.vcf
 rule filter_heterozygous_genotypes:
     input:
-        rscript=f"{scripts_dir}/filter_heterozygous_genotypes.R"
+        rscript=f"{data_dir}/filter_heterozygous_genotypes.R"
     output:
         f"{data_dir}/boech_gbs_allsamples_biallelic_snps_filterPASSED_DPfilterNoCall.vcf.gz"
     shell:
