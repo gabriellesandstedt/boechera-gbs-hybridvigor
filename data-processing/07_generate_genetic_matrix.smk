@@ -54,6 +54,9 @@ rule select_biallelic_snps:
         """
 
 # filter biallelic SNPs for minor allele count
+# 42 samples
+# max missing, 10%
+# minor allele count 5/84 > 5%
 rule filter_minor_allele_count:
     input:
         snps_vcf=f"{data_dir}/boech_gbs_final_genetic_matrix_samples_SNPs.vcf"
@@ -69,7 +72,8 @@ rule filter_minor_allele_count:
             --remove-indels \
             --min-alleles 2 \
             --max-alleles 2 \
-            --mac 3 \
+            --max-missing 0.1 \
+            --mac 5 \
             --recode \
             --recode-INFO-all \
             --out {output.filtered_mac_vcf_prefix}
