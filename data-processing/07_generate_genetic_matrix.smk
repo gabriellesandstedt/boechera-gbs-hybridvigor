@@ -82,6 +82,7 @@ rule filter_minor_allele_count:
         tabix -p vcf {output.filtered_mac_vcf}
         """
 
+#2137 snps
 # define rule to convert snps vcf to a bed file         
 rule gzvcf_to_bed:
     input:
