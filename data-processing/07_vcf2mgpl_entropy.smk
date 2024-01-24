@@ -432,7 +432,7 @@ rule select_biallelic_snps_retro_retro:
             -O {output.biallelic_vcf}
         """
 
-# 113 samples, mac of 6 >0.05
+# 113 samples, mac of 12 >0.05 (12/226)
 rule filter_minor_allele_count_retro_retro:
     input:
         snps_vcf=f"{data_dir}/boech_gbs_retro_retro_entropy_SNPs.vcf"
@@ -446,7 +446,7 @@ rule filter_minor_allele_count_retro_retro:
             --remove-indels \
             --min-alleles 2 \
             --max-alleles 2 \
-            --mac 6 \
+            --mac 12 \
             --recode \
             --recode-INFO-all \
             --out {output.filtered_mac_vcf}
