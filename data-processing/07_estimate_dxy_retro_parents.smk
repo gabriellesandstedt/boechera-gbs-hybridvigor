@@ -80,7 +80,7 @@ rule filter_minor_allele_count:
     input:
         snps_vcf=f"{data_dir}/boech_gbs_retro_parents_samples_SNPs.vcf"
     output:
-        filtered_mac_vcf_prefix=f"{data_dir}/boech_gbs_retro_parents_samples_SNPs_filtered.vcf",
+        filtered_mac_vcf_prefix=f"{data_dir}/boech_gbs_retro_parents_samples_SNPs_filtered_mf.vcf",
         filtered_mac_vcf=f"{data_dir}/boech_gbs_retro_parents_samples_SNPs_filtered.vcf.gz"
     shell:
         """
@@ -91,6 +91,7 @@ rule filter_minor_allele_count:
             --remove-indels \
             --min-alleles 2 \
             --max-alleles 2 \
+            --maf 0.1 \
             --mac 3 \
             --recode \
             --recode-INFO-all \
