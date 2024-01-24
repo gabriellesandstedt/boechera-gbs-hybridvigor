@@ -107,6 +107,7 @@ rule retroLow_str_snps:
         """
 
 # 65 samples, mac of (7/130) > 0.05 
+# minor allele frequence 10%
 rule filter_minor_allele_count_retro_str:
     input:
         snps_vcf=f"{data_dir}/boech_gbs_retro_str_entropy_SNPs.vcf"
@@ -121,6 +122,7 @@ rule filter_minor_allele_count_retro_str:
             --min-alleles 2 \
             --max-alleles 2 \
             --mac 7 \
+            --maf 0.1 \
             --recode \
             --recode-INFO-all \
             --out {output.filtered_mac_vcf}
@@ -232,7 +234,7 @@ for row in rows:
         else:
             extracted_values.extend(['0', '0', '0'])
 
-    extracted_values_str = ' '.join(extracted_values)
+    extracted_values_strls 0 = ' '.join(extracted_values)
     output_data.append(extracted_values_str)
 
 with open("{output.split_mgpl}", "w") as output_file:
@@ -389,7 +391,7 @@ rule chrpos_retro_str:
 # for the final mgpl file, I manually replaced row 1 from the output of this rule. 
 # first row has two columns (space delimited). col 1 | number of indiviuals, col 2| number of loci
 # second row are the individuals, space delimited
-# 4335 loci
+#  loci 3819
 rule combine_chr_mpgl_retro_str:
     input:
         retro_str_chrpos=f"{data_dir}/boech_gbs_retro_str_entropy_SNPs_filtered_chr_pos.txt",
@@ -446,6 +448,7 @@ rule filter_minor_allele_count_retro_retro:
             --remove-indels \
             --min-alleles 2 \
             --max-alleles 2 \
+            --maf 0.1 \
             --mac 12 \
             --recode \
             --recode-INFO-all \
