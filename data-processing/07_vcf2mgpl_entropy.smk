@@ -435,6 +435,7 @@ rule select_biallelic_snps_retro_retro:
         """
 
 # 113 samples, mac of 12 >0.05 (12/226)
+# 1801 loci 
 rule filter_minor_allele_count_retro_retro:
     input:
         snps_vcf=f"{data_dir}/boech_gbs_retro_retro_entropy_SNPs.vcf"
@@ -467,7 +468,7 @@ rule split_retro_retro_hybrids_vcf:
         """
 
 # generate mgpl file
-# total snps: 2977
+# total snps: 1801
 rule retro_retro_hybrids_vcf2mgpl:
     input:
         split_vcf=f"{data_dir}/boech_gbs_retro_retro_entropy_SNPs_filtered_split.txt"
