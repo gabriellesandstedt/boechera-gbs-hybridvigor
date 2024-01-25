@@ -107,7 +107,8 @@ rule retroLow_str_snps:
         """
 
 # 65 samples, mac of (7/130) > 0.05 
-# minor allele frequence 10%
+# max_missing 10%
+#4335 loci
 rule filter_minor_allele_count_retro_str:
     input:
         snps_vcf=f"{data_dir}/boech_gbs_retro_str_entropy_SNPs.vcf"
@@ -122,7 +123,7 @@ rule filter_minor_allele_count_retro_str:
             --min-alleles 2 \
             --max-alleles 2 \
             --mac 7 \
-            --maf 0.1 \
+            --max-missing 0.1 \
             --recode \
             --recode-INFO-all \
             --out {output.filtered_mac_vcf}
@@ -234,7 +235,7 @@ for row in rows:
         else:
             extracted_values.extend(['0', '0', '0'])
 
-    extracted_values_strls 0 = ' '.join(extracted_values)
+    extracted_values_str = ' '.join(extracted_values)
     output_data.append(extracted_values_str)
 
 with open("{output.split_mgpl}", "w") as output_file:
@@ -271,7 +272,6 @@ rule combine_chr_mpgl_retro_str:
 
 
 # generate mgpl file
-# 
 rule retro_str_hybrids_vcf2mgpl:
     input:
         split_vcf=f"{data_dir}/boech_gbs_retroLow_str_entropy_SNPs_filtered_split.txt"
