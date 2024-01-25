@@ -391,7 +391,7 @@ rule chrpos_retro_str:
 # for the final mgpl file, I manually replaced row 1 from the output of this rule. 
 # first row has two columns (space delimited). col 1 | number of indiviuals, col 2| number of loci
 # second row are the individuals, space delimited
-#  loci 3819
+#  loci 4335
 rule combine_chr_mpgl_retro_str:
     input:
         retro_str_chrpos=f"{data_dir}/boech_gbs_retro_str_entropy_SNPs_filtered_chr_pos.txt",
@@ -435,7 +435,7 @@ rule select_biallelic_snps_retro_retro:
         """
 
 # 113 samples, mac of 12 >0.05 (12/226)
-# 1801 loci 
+# 2134
 rule filter_minor_allele_count_retro_retro:
     input:
         snps_vcf=f"{data_dir}/boech_gbs_retro_retro_entropy_SNPs.vcf"
@@ -449,7 +449,7 @@ rule filter_minor_allele_count_retro_retro:
             --remove-indels \
             --min-alleles 2 \
             --max-alleles 2 \
-            --maf 0.1 \
+            --max-missing 0.1 \
             --mac 12 \
             --recode \
             --recode-INFO-all \
@@ -468,7 +468,7 @@ rule split_retro_retro_hybrids_vcf:
         """
 
 # generate mgpl file
-# total snps: 1801
+# total snps: 2134
 rule retro_retro_hybrids_vcf2mgpl:
     input:
         split_vcf=f"{data_dir}/boech_gbs_retro_retro_entropy_SNPs_filtered_split.txt"
