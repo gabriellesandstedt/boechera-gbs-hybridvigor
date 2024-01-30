@@ -109,24 +109,10 @@ rule filter_missing_invvcf:
         tabix -p vcf {output.filtered_mm_inv_vcf}
         """
 
-# bgzip and tabix files
-rule vcf_to_gzvcf:
-    input:
-        inv_vcf=f"{data_dir}/boech_gbs_allsamples_invariant.vcf"
-    output:
-        gz_invar_vcf=f"{data_dir}/boech_gbs_allsamples_invariant.vcf.gz",
-        tabix_invar_vcf=f"{data_dir}/boech_gbs_allsamples_invariant.vcf.gz.tbi"
-    shell:
-        """
-        module load htslib/1.16
-        bgzip {input.inv_vcf}
-        tabix -p vcf {output.gz_invar_vcf}
-        """
-
 rule combine_vcfs:
     input:
        gz_var_vcf=f"{data_dir}/boech_gbs_allsamples_SNPs_filtered.vcf.gz",
-       gz_invar_vcf=f"{data_dir}/boech_gbs_allsamples_invariant.vcf.gz"
+       gz_invar_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_filtered.vcf.gz"
     output:
        final_vcf=f"{data_dir}/boech_gbs_allsamples_final.vcf.gz",
        tabix_final=f"{data_dir}/boech_gbs_allsamples_final.vcf.gz.tbi"
