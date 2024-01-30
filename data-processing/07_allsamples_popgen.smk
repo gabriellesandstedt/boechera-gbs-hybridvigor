@@ -88,6 +88,27 @@ rule filter_minor_allele_count:
         """
 
 
+rule filter_missing_invvcf:
+    input:
+        inv_vcf=f"{data_dir}/boech_gbs_allsamples_invariant.vcf"
+    output:
+        filtered_mm_inv_vcf_prefix=f"{data_dir}/boech_gbs_allsamples_invariant_filtered.vcf",
+        filtered_mm_inv_vcf=f"{data_dir}/boech_gbs_allsamples_invariant_filtered.vcf.gz"
+    shell:
+        """
+        module load vcftools/0.1.15-6
+        module load htslib/1.18
+        vcftools \
+            --vcf {input.inv_vcf} \
+            --max-missing 0.1 \
+            --recode \
+            --recode-INFO-all \
+            --out {output.filtered_mm_invvcf_prefix}
+        
+        bgzip -c {output.filtered_mm_inv_vcf_prefix}.recode.vcf > {output.filtered_mm_inv_vcf}
+        tabix -p vcf {output.filtered_mm_inv_vcf}
+        """
+
 # bgzip and tabix files
 rule vcf_to_gzvcf:
     input:
