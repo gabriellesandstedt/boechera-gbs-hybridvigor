@@ -23,8 +23,8 @@ rule all:
     input:
         expand(f"{qc1_dir}/{{sample}}_1_fastqc.html", sample=samples),
         expand(f"{qc1_dir}/{{sample}}_2_fastqc.html", sample=samples),
-        expand(f"{data_dir}/{{sample}}_1_cut.fq.gz", sample=samples),
-        expand(f"{data_dir}/{{sample}}_2_cut.fq.gz", sample=samples),
+        expand(f"{data_dir}/{{sample}}_1_cut.fastq.gz", sample=samples),
+        expand(f"{data_dir}/{{sample}}_2_cut.fastq.gz", sample=samples),
         expand(f"{qc2_dir}/{{sample}}_1_cut_fastqc.html", sample=samples),
         expand(f"{qc2_dir}/{{sample}}_2_cut_fastqc.html", sample=samples)
 
@@ -59,10 +59,10 @@ rule fastqc_raw:
 # -m : minimum length, removes reads < 50 bps long
 rule cutadapt:
     input:
-        fq1=f"{data_dir}/{{sample}}_1.fastq.gz"
+        fq1=f"{data_dir}/{{sample}}_1.fastq.gz",
         fq2=f"{data_dir}/{{sample}}_2.fastq.gz"
     output:
-        cut_fq1=f"{data_dir}/{{sample}}_1_cut.fastq.gz"
+        cut_fq1=f"{data_dir}/{{sample}}_1_cut.fastq.gz",
         cut_fq2=f"{data_dir}/{{sample}}_2_cut.fastq.gz"
     shell:
         """
