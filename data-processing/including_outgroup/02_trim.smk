@@ -62,7 +62,7 @@ rule cutadapt:
         """
         echo -e "\n["$(date)"]\n Run cutadapt on fastq file {input} ...\n"
         module load cutadapt/3.5
-        cutadapt -a AGATCGGAAG -a {params.adapter} -m 50 {input.fq} | gzip > {output.cut_fq}
+        cutadapt -a TACACTCTTTCCCTACACGACGCTCTTCCGATCT -a GTGACTGGAGTTCAGACGTGTGCTCTTCCGATCT -m 50 {input.fq} | gzip > {output.cut_fq}
         """
 
 # Define rule for checking quality of trimmed fastq files
