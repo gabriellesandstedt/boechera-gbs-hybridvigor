@@ -42,7 +42,7 @@ rule fastqc_raw:
         log2=f"{log_dir}/{{sample}}_2.log"
     shell:
         """
-        module load FastQC/0.11.9-Java-11
+        module load fastqc/0.12.1
         echo -e "\\n["$(date)"]\\n Run FastQC on fastq file {input.fq1} ...\\n"
         fastqc -o {qc1_dir} --noextract {input.fq1} &> {log.log1} 
         echo -e "\\n["$(date)"]\\n FastQC round 1, read 1 finished ...\\n"
@@ -86,7 +86,7 @@ rule fastqc_trimmed:
         log2=f"{log_dir}/trim_{{sample}}_2.log"
     shell:
         """
-        module load FastQC/0.11.9-Java-11
+        module load fastqc/0.12.1
         echo -e "\\n["$(date)"]\\n Run FastQC on fastq file {input.trim_fq1} ...\\n"
         fastqc -o {qc2_dir} --noextract {input.cut_fq1} &> {log.log1}
         echo -e "\\n["$(date)"]\\n FastQC round 2, read 1 finished ...\\n"
