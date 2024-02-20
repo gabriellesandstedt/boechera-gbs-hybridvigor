@@ -82,16 +82,16 @@ rule fastqc_trimmed:
         cut_fqc1=f"{qc2_dir}/{{sample}}_1_cut_fastqc.html",
         cut_fqc2=f"{qc2_dir}/{{sample}}_2_cut_fastqc.html"
     log:
-        log1=f"{log_dir}/trim_{{sample}}_1.log",
-        log2=f"{log_dir}/trim_{{sample}}_2.log"
+        log1=f"{log_dir}/cut_{{sample}}_1.log",
+        log2=f"{log_dir}/cut_{{sample}}_2.log"
     shell:
         """
         module load fastqc/0.12.1
-        echo -e "\\n["$(date)"]\\n Run FastQC on fastq file {input.trim_fq1} ...\\n"
+        echo -e "\\n["$(date)"]\\n Run FastQC on fastq file {input.cut_fq1} ...\\n"
         fastqc -o {qc2_dir} --noextract {input.cut_fq1} &> {log.log1}
         echo -e "\\n["$(date)"]\\n FastQC round 2, read 1 finished ...\\n"
 
-        echo -e "\\n["$(date)"]\\n Run FastQC on fastq file {input.trim_fq2} ...\\n"
+        echo -e "\\n["$(date)"]\\n Run FastQC on fastq file {input.cut_fq2} ...\\n"
         fastqc -o {qc2_dir} --noextract {input.cut_fq2} &> {log.log2}
         echo -e "\\n["$(date)"]\\n FastQC round 2, read 2 finished ...\\n"
         """
