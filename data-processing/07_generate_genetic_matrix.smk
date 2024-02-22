@@ -55,7 +55,6 @@ rule select_biallelic_snps:
 
 # filter biallelic SNPs for minor allele count
 # 42 samples
-# max missing, 10%
 # minor allele count 5/84 > 5%
 rule filter_minor_allele_count:
     input:
@@ -72,7 +71,6 @@ rule filter_minor_allele_count:
             --remove-indels \
             --min-alleles 2 \
             --max-alleles 2 \
-            --max-missing 0.1 \
             --mac 5 \
             --recode \
             --recode-INFO-all \
@@ -82,7 +80,7 @@ rule filter_minor_allele_count:
         tabix -p vcf {output.filtered_mac_vcf}
         """
 
-#2137 snps
+# 2064 snps 
 # define rule to convert snps vcf to a bed file         
 rule gzvcf_to_bed:
     input:
