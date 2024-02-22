@@ -91,7 +91,6 @@ rule filter_minor_allele_count:
             --remove-indels \
             --min-alleles 2 \
             --max-alleles 2 \
-            --max-missing 0.1 \
             --mac 3 \
             --recode \
             --recode-INFO-all \
