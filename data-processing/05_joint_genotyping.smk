@@ -60,7 +60,7 @@ rule hap_caller:
         bam = f"{data_dir}/{{sample}}_sorted_RG.bam",
         intervals = f"{data_dir}/{interval_list}"
     output:
-        gvcf = f"{data_dir}/{{sample}}.g.vcf"
+        gvcf = f"{data_dir}/{{sample}}.g.vcf.gz"
     shell:
         """
         module load gatk/4.1
@@ -75,7 +75,6 @@ rule hap_caller:
 # define rule to combine gvcfs of all samples in a database
 rule genomicsdb_import_allsamples:
     input:
-        gvcf=expand(f"{data_dir}/{{sample}}.g.vcf", sample=df['Sample']),
         interval_list=f"{data_dir}/{interval_list}",
         map_allsamples=f"{data_dir}/{sample_map1}"
     output:
