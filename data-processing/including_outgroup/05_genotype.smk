@@ -61,13 +61,13 @@ rule genomicsdb_import_allsamples:
             --intervals {input.interval_list}
         """
 
-# define rule to joint genotype for all samples at all sites
+
 rule joint_genotype_allsamples:
     input:
         ref=f"{ref_dir}/{ref}",
-        intervals=f"{data_dir}/{interval_list}"
+        interval="{data_dir}/interval.list"  
     output:
-        boech_output=f"{data_dir}/boech_gbs_allsamples_withcaps.vcf"
+        boech_output="{data_dir}/boech_gbs_allsamples_withcaps_{interval}.vcf" 
     params:
         genomicsdb="gendb://DB_allsamples"
     shell:
@@ -76,8 +76,9 @@ rule joint_genotype_allsamples:
         gatk GenotypeGVCFs \
             -R {input.ref} \
             -V {params.genomicsdb} \
-            -L {input.intervals} \
+            -L {input.interval} \
             --allow-old-rms-mapping-quality-annotation-data \
             --all-sites \
-            -O {output.boech_output}
+            -O {output.boech_output} \
         """
+
