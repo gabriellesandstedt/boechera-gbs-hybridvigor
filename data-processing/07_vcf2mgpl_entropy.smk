@@ -10,7 +10,7 @@
 # Define the paths to data files
 data_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/data"
 ref_genome = "GCA_018361405.1_NTU_Bstr_LTM_2.2_genomic.fa"
-vcf = "boech_gbs_allsamples_SNPs_filtered.vcf.gz"
+vcf = "boech_gbs_allsamples_final.vcf.gz"
 
 # define rule to subset only retro - stricta parents and hybrids 
 rule retro_str_hybrids:
