@@ -61,7 +61,7 @@ rule select_biallelic_snps:
 
 # filter SNPs to remove rare alleles
 # 156 samples, mac 16/312 alleles >0.05% 
-# total snps 5316, this file can be used to perform a pca 
+# total snps 3862, this file can be used to perform a pca 
 rule filter_minor_allele_count:
     input:
         snps_vcf=f"{data_dir}/boech_gbs_allsamples_SNPs.vcf"
