@@ -9,9 +9,9 @@
 #SBATCH --output=ent.out
 #SBATCH --error=ent.error
 
-entropy -i boech_gbs_retro_str_entropy_SNPs_filtered_20MAR.mgpl -m 1 -n 2 -k 2 -q retro_stricta_k2.txt -Q 1 -l 15000 -b 5000 -t 5 -s 30 -o mcmc_retro_stricta_m1n2k2Q1l15000b5000t5s30_qfilek2_chain1_20MAR.hdf5
-entropy -i boech_gbs_retro_str_entropy_SNPs_filtered_20MAR.mgpl -m 1 -n 2 -k 2 -q retro_stricta_k2.txt -Q 1 -l 15000 -b 5000 -t 5 -s 30 -o mcmc_retro_stricta_m1n2k2Q1l15000b5000t5s30_qfilek2_chain2_20MAR.hdf5
-entropy -i boech_gbs_retro_str_entropy_SNPs_filtered_20MAR.mgpl -m 1 -n 2 -k 2 -q retro_stricta_k2.txt -Q 1 -l 15000 -b 5000 -t 5 -s 30 -o mcmc_retro_stricta_m1n2k2Q1l15000b5000t5s30_qfilek2_chain3_20MAR.hdf5
+entropy -i boech_gbs_retro_str_entropy_SNPs_filtered_20MAR.mgpl -m 1 -n 2 -k 2 -q ldak2_retro_stricta_lmel.txt -Q 1 -l 15000 -b 5000 -t 5 -s 30 -o mcmc_retro_stricta_m1n2k2Q1l15000b5000t5s30_qfilek2_chain1_20MAR.hdf5
+entropy -i boech_gbs_retro_str_entropy_SNPs_filtered_20MAR.mgpl -m 1 -n 2 -k 2 -q ldak2_retro_stricta_lmel.txt -Q 1 -l 15000 -b 5000 -t 5 -s 30 -o mcmc_retro_stricta_m1n2k2Q1l15000b5000t5s30_qfilek2_chain2_20MAR.hdf5
+entropy -i boech_gbs_retro_str_entropy_SNPs_filtered_20MAR.mgpl -m 1 -n 2 -k 2 -q ldak2_retro_stricta_lmel.txt -Q 1 -l 15000 -b 5000 -t 5 -s 30 -o mcmc_retro_stricta_m1n2k2Q1l15000b5000t5s30_qfilek2_chain3_20MAR.hdf5
 
 entropy -i boech_gbs_retro_retro_entropy_final.mgpl -m 1 -n 2 -k 2 -q retro_retro_k2.txt -Q 1 -l 15000 -b 5000 -t 5 -s 30 -o mcmc_retro_retro_m1n2k2Q1l15000b5000t5s30_qfilek2_chain1.hdf5
 entropy -i boech_gbs_retro_retro_entropy_final.mgpl -m 1 -n 2 -k 2 -q retro_retro_k2.txt -Q 1 -l 15000 -b 5000 -t 5 -s 30 -o mcmc_retro_retro_m1n2k2Q1l15000b5000t5s30_qfilek2_chain2.hdf5
