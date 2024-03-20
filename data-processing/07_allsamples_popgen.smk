@@ -87,7 +87,7 @@ rule filter_minor_allele_count:
         tabix -p vcf {output.filtered_mac_vcf}
         """
 
-
+# this results in the same number of sites, no difference made.
 rule filter_missing_invvcf:
     input:
         inv_vcf=f"{data_dir}/boech_gbs_allsamples_invariant.vcf"
