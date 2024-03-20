@@ -10,14 +10,14 @@
 # Define the paths to data files
 data_dir = "/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/data"
 ref_genome = "GCA_018361405.1_NTU_Bstr_LTM_2.2_genomic.fa"
-vcf = "boech_gbs_allsamples_combined_final.vcf.gz"
+vcf = "boech_gbs_allsamples_final.vcf.gz"
 
 # define rule to subset only retro - stricta parents and hybrids 
 rule retro_str_hybrids:
     input:
         vcf=f"{data_dir}/{vcf}"
     output:
-        retro_str_hybrids_vcf=f"{data_dir}/boech_gbs_retro_str_entropy.vcf"
+        retro_str_hybrids_vcf=f"{data_dir}/boech_gbs_retro_str_entropy_20MAR.vcf"
     shell:
         """
         module load bcftools/1.16
@@ -173,9 +173,9 @@ rule filter_minor_allele_count_retroLow_str:
 
 rule split_retro_str_hybrids_vcf:
     input: 
-        filtered_mac_vcf=f"{data_dir}/boech_gbs_retro_str_entropy_SNPs_filtered.vcf.recode.vcf"
+        filtered_mac_vcf=f"{data_dir}/boech_gbs_retro_str_entropy_20MAR.vcf"
     output:
-        split_vcf=f"{data_dir}/boech_gbs_retro_str_entropy_SNPs_filtered_split.txt"
+        split_vcf=f"{data_dir}/boech_gbs_retro_str_entropy_SNPs_filtered_split_20MAR.txt"
     shell:
         """
         echo -e "CHROM\tPOS\t$(head -n 1 {input.filtered_mac_vcf}  | cut -f 10-143)" > {output.split_vcf}
@@ -208,9 +208,9 @@ rule split_retroLow_str_hybrids_vcf:
 # total snps 
 rule retro_str_hybrids_vcf2mgpl:
     input:
-        split_vcf=f"{data_dir}/boech_gbs_retro_str_entropy_SNPs_filtered_split.txt"
+        split_vcf=f"{data_dir}/boech_gbs_retro_str_entropy_SNPs_filtered_split_20MAR.txt"
     output:
-        split_mgpl=f"{data_dir}/boech_gbs_retro_str_entropy_SNPs_filtered.mgpl"
+        split_mgpl=f"{data_dir}/boech_gbs_retro_str_entropy_SNPs_filtered_20MAR.mgpl"
     shell:
         r"""
         python - <<'EOF'
@@ -247,9 +247,9 @@ EOF
 # extract chromosome and position info 
 rule chrpos_retro_str:
     input: 
-        retro_str_vcf=f"{data_dir}/boech_gbs_retro_str_entropy_SNPs_filtered.vcf.recode.vcf"
+        retro_str_vcf=f"{data_dir}/boech_gbs_retro_str_entropy_20MAR.vcf"
     output:
-        retro_str_chrpos=f"{data_dir}/boech_gbs_retro_str_entropy_SNPs_filtered_chr_pos.txt"
+        retro_str_chrpos=f"{data_dir}/boech_gbs_retro_str_entropy_SNPs_filtered_chr_pos_20MAR.txt"
     shell:
         """
         echo -e "CHROM:POS\t$(head -n 1 {input.retro_str_vcf} | cut -f 1-2)" > {output.retro_str_chrpos}
@@ -261,7 +261,7 @@ rule chrpos_retro_str:
 # second row are the individuals, space delimited
 rule combine_chr_mpgl_retro_str:
     input:
-        retro_str_chrpos=f"{data_dir}/boech_gbs_retro_str_entropy_SNPs_filtered_chr_pos.txt",
+        retro_str_chrpos=f"{data_dir}/boech_gbs_retro_str_entropy_SNPs_filtered_chr_pos_20MAR.txt",
         mgpl=f"{data_dir}/boech_gbs_retro_str_entropy_SNPs_filtered.mgpl"
     output:
         final_mgpl=f"{data_dir}/boech_gbs_retro_str_entropy_final.mgpl"
