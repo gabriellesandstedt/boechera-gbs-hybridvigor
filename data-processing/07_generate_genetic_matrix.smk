@@ -72,6 +72,7 @@ rule filter_minor_allele_count:
             --min-alleles 2 \
             --max-alleles 2 \
             --mac 5 \
+            --max-missing 0.1 \
             --recode \
             --recode-INFO-all \
             --out {output.filtered_mac_vcf_prefix}
