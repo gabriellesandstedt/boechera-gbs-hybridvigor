@@ -108,7 +108,6 @@ rule retroLow_str_snps:
 
 # 65 samples, mac of (7/130) > 0.05 
 # max_missing 10%
-#4335 loci
 rule filter_minor_allele_count_retro_str:
     input:
         snps_vcf=f"{data_dir}/boech_gbs_retro_str_entropy_SNPs.vcf"
@@ -130,7 +129,6 @@ rule filter_minor_allele_count_retro_str:
         """
 
 #3/49
-#5496 SNPs
 rule filter_minor_allele_count_retroUP_str:
     input:
         snps_vcf=f"{data_dir}/boech_gbs_retroUP_str_entropy_SNPs.vcf"
@@ -145,6 +143,7 @@ rule filter_minor_allele_count_retroUP_str:
             --min-alleles 2 \
             --max-alleles 2 \
             --mac 3 \
+            --max-missing 0.1 \
             --recode \
             --recode-INFO-all \
             --out {output.filtered_mac_vcf}
@@ -164,6 +163,7 @@ rule filter_minor_allele_count_retroLow_str:
             --remove-indels \
             --min-alleles 2 \
             --max-alleles 2 \
+            --max-missing 0.1 \
             --mac 3 \
             --recode \
             --recode-INFO-all \
