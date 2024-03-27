@@ -103,7 +103,7 @@ rule filter_missing_invvcf:
             --max-missing 0.1 \
             --recode \
             --recode-INFO-all \
-            --out {output.filtered_mm_invvcf_prefix}
+            --out {output.filtered_mm_inv_vcf_prefix} 
         
         bgzip -c {output.filtered_mm_inv_vcf_prefix}.recode.vcf > {output.filtered_mm_inv_vcf}
         tabix -p vcf {output.filtered_mm_inv_vcf}
