@@ -69,7 +69,7 @@ rule hap_caller:
             -O {output.gvcf} \
             -R {input.ref} \
             -L {input.intervals} \
-            -ERC GVCF
+            -ERC BP_RESOLUTION
         """
 
 # define rule to combine gvcfs of all samples in a database
