@@ -4,7 +4,7 @@ import vcf
 vcf_reader = vcf.Reader(open('boech_gbs_allsamples_combined_final.vcf', 'r'))
 
 # Set the window size and starting position
-window_size = 1000000
+window_size = 5000000
 current_pos = {chromosome: 1 for chromosome in ["CM031545.1", "CM031546.1", "CM031547.1", "CM031548.1", "CM031549.1", "CM031550.1", "CM031551.1"]}
 
 # Initialize counters for homozygous and heterozygous genotypes for all samples
