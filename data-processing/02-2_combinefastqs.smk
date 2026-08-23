@@ -1,5 +1,5 @@
 ################################################################################
-## Combine asex fastqs
+## Combine replicate fastqs
 ################################################################################
 ################################################################################
 ## AUTHOR: Gabrielle Sandstedt
@@ -25,7 +25,7 @@ rule all:
         expand(f"{data_dir}/{{sample_combine1}}_RR_cut.fastq.gz", sample_combine1=df1['Sample']),
         expand(f"{data_dir}/{{sample_combine2}}_SR_cut.fastq.gz", sample_combine2=df2['Sample'])
 
-# combine fastq files that are bioreplicates of retroxretro asexuals
+# combine fastq files that are replicates of retroxretro asexuals
 rule combine_retro_asex:
     input:
         fqA=f"{cut_dir}/{{sample_combine1}}_BrA_cut.fastq.gz",
@@ -37,7 +37,7 @@ rule combine_retro_asex:
         zcat {input.fqA} {input.fqB} | gzip -c > {output.combined_fq_RR}
         """
 
-# combine fastq files that are bioreplicates of strictaxretro asexuals
+# combine fastq files that are replicates of strictaxretro asexuals
 rule combine_stricta_retro_asex:
     input:
         fqA=f"{cut_dir}/{{sample_combine2}}_BsA_cut.fastq.gz",
